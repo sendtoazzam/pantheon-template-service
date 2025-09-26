@@ -1,97 +1,321 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
-
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
-
 # Muslim Finder Backend
 
-A comprehensive Laravel backend API for Muslim Finder with advanced authentication, role-based access control, and multi-tenant support.
+A comprehensive Laravel-based backend API for the Muslim Finder application, featuring advanced user management, role-based access control, merchant management, and booking systems.
 
-## About Muslim Finder Backend
+## 🚀 **Features**
 
-Muslim Finder Backend is a robust Laravel-based API system designed to provide comprehensive backend services for Muslim-focused applications. It features advanced authentication, role-based access control, multi-tenant support, and extensive API endpoints for managing users, merchants, bookings, and more.
-
-## Key Features
-
+### **🔐 Authentication & Security**
 - **Laravel Sanctum** for API authentication
-- **Spatie Laravel Permission** for role and permission management
-- **Multi-Guard Authentication** (web, api, superadmin, admin, vendor)
+- **Spatie Laravel Permission** for role-based access control
+- **Enhanced Guard System** with multiple authentication layers
 - **Two-Factor Authentication (2FA)** with TOTP support
-- **Email Verification** system
-- **Secure Password Reset** with tokens
-- **Account Lockout** protection
-- **Rate Limiting** and security policies
-- **Vendor Creation** with automatic user account setup
-- **Comprehensive Merchant Settings** with API warehouse integration
-- **API Call Logging** with detailed request/response tracking
-- **Swagger/OpenAPI Documentation** with 137+ endpoints
-- **Postman Collections** for easy testing
+- **Email verification** and password reset functionality
+- **Login history tracking** and security monitoring
+- **Rate limiting** and IP whitelisting for admin access
 
-## Recent Changes
+### **👥 User Management System**
+- **Multi-role hierarchy**: Superadmin, Admin, Vendor (Merchant), User
+- **User profiles** with extended information
+- **User preferences** and settings management
+- **Activity logging** and audit trails
+- **Notification system** with real-time updates
+- **Session management** and security controls
 
-### v1.0.0 - Rebranding Update
-- ✅ Complete rebranding from Pantheon Template Service to Muslim Finder Backend
-- ✅ Renamed PantheonLoggerService to LoggerService
-- ✅ Updated all domain references from pantheon.com to muslimfinder.com
-- ✅ Enhanced vendor creation API with automatic user account setup
-- ✅ Comprehensive merchant settings with dummy API warehouse data
-- ✅ Updated Swagger documentation and Postman collections
-- ✅ Updated all frontend components and Blade templates
-- ✅ Updated configuration files and documentation
+### **🏪 Merchant/Vendor Management**
+- **Comprehensive merchant profiles** with business information
+- **Merchant settings** for API keys and configuration
+- **Business verification** and status management
+- **Location-based services** with geolocation support
+- **Subscription management** and feature access control
 
-## About Laravel
+### **📅 Booking System**
+- **Complete booking lifecycle** management
+- **Merchant-specific booking** views
+- **Status tracking** and updates
+- **Integration with external APIs** for enhanced functionality
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### **🔌 API Integration**
+- **External API integration** for products, packages, insurance
+- **Webhook support** for real-time updates
+- **Comprehensive API documentation** with Swagger/OpenAPI
+- **Rate limiting** and API monitoring
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🛠️ **Technology Stack**
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### **Backend**
+- **Laravel 12** - PHP framework
+- **Laravel Sanctum** - API authentication
+- **Spatie Laravel Permission** - Role & permission management
+- **Spatie Laravel Activity Log** - Activity tracking
+- **Spatie Laravel Media Library** - Media management
+- **Google2FA Laravel** - Two-factor authentication
+- **L5 Swagger** - API documentation
 
-## Learning Laravel
+### **Frontend**
+- **React 19** - Frontend framework
+- **TailwindCSS 4** - Styling framework
+- **Vite** - Build tool
+- **Heroicons & Tabler Icons** - Icon libraries
+- **SweetAlert2** - User notifications
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### **Database**
+- **SQLite** (development)
+- **Eloquent ORM** for database operations
+- **Comprehensive migrations** for all features
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## 📋 **API Endpoints**
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### **Authentication (`/api/v1/auth/`)**
+- `POST /register` - User registration
+- `POST /login` - User login
+- `POST /login/{guard}` - Enhanced guard-based login
+- `POST /logout` - User logout
+- `GET /me` - Get current user
+- `POST /refresh` - Refresh token
+- `POST /setup-2fa` - Setup two-factor authentication
+- `POST /verify-2fa` - Verify 2FA code
+- `POST /forgot-password` - Password reset request
+- `POST /reset-password` - Password reset
 
-## Laravel Sponsors
+### **User Management (`/api/v1/users/`)**
+- `GET /` - List users
+- `GET /profile` - Get user profile
+- `PUT /profile` - Update user profile
+- `GET /statistics` - User statistics
+- `POST /bulk-update` - Bulk user updates
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### **Role & Permission Management (`/api/v1/roles/`, `/api/v1/permissions/`)**
+- `GET /` - List roles/permissions
+- `POST /` - Create role/permission
+- `PUT /{id}` - Update role/permission
+- `DELETE /{id}` - Delete role/permission
+- `POST /{id}/assign-permissions` - Assign permissions to role
 
-### Premium Partners
+### **Merchant Management (`/api/v1/merchants/`)**
+- `GET /` - List merchants
+- `GET /profile` - Get merchant profile
+- `PUT /profile` - Update merchant profile
+- `GET /settings` - Get merchant settings
+- `PUT /settings` - Update merchant settings
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### **Booking System (`/api/v1/bookings/`)**
+- `GET /` - List bookings
+- `GET /my` - User's bookings
+- `GET /merchant` - Merchant's bookings
+- `POST /` - Create booking
+- `PUT /{id}/status` - Update booking status
 
-## Contributing
+### **System & Health (`/api/v1/health/`, `/api/v1/system/`)**
+- `GET /health/` - Basic health check
+- `GET /health/detailed` - Detailed health status
+- `GET /system/status` - System status
+- `GET /system/metrics` - System metrics
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## 🚀 **Installation & Setup**
 
-## Code of Conduct
+### **Prerequisites**
+- PHP 8.2 or higher
+- Composer
+- Node.js 18+ and npm
+- SQLite (or MySQL/PostgreSQL)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### **Installation Steps**
 
-## Security Vulnerabilities
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/nexworks-technology/muslim-finder-backend.git
+   cd muslim-finder-backend
+   ```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+2. **Install PHP dependencies**
+   ```bash
+   composer install
+   ```
 
-## License
+3. **Install Node.js dependencies**
+   ```bash
+   npm install
+   ```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+4. **Environment setup**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+
+5. **Database setup**
+   ```bash
+   php artisan migrate
+   php artisan db:seed
+   ```
+
+6. **Build frontend assets**
+   ```bash
+   npm run build
+   ```
+
+### **Development Setup**
+
+For development with hot reloading:
+
+```bash
+# Start all development services
+composer run dev
+
+# Or start individually:
+php artisan serve          # Laravel server
+php artisan queue:listen   # Queue worker
+php artisan pail          # Log viewer
+npm run dev               # Vite dev server
+```
+
+## 🔧 **Configuration**
+
+### **Environment Variables**
+Key environment variables to configure:
+
+```env
+APP_NAME="Muslim Finder Backend"
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost:8000
+
+DB_CONNECTION=sqlite
+DB_DATABASE=/path/to/database.sqlite
+
+SANCTUM_STATEFUL_DOMAINS=localhost:3000
+SESSION_DRIVER=database
+SESSION_LIFETIME=120
+
+# 2FA Configuration
+GOOGLE2FA_APP_NAME="Muslim Finder"
+```
+
+### **Guards Configuration**
+The application supports multiple authentication guards:
+
+- **`web`** - Standard web authentication
+- **`admin`** - Admin-specific authentication
+- **`vendor`** - Vendor/merchant authentication
+- **`api`** - Standard API authentication
+- **`api_admin`** - Admin API authentication
+- **`api_vendor`** - Vendor API authentication
+
+## 📊 **User Roles & Permissions**
+
+### **Role Hierarchy**
+
+1. **Superadmin**
+   - Ultimate system access
+   - Can manage all users and roles
+   - Full API access
+   - Module access management
+
+2. **Admin**
+   - Administrative functions
+   - User management (limited)
+   - Merchant management
+   - Booking oversight
+
+3. **Vendor (Merchant)**
+   - Manage own business profile
+   - Handle own bookings
+   - Access to merchant settings
+   - Business analytics
+
+4. **User**
+   - Basic user functionality
+   - Manage own profile
+   - Create and manage bookings
+   - View available merchants
+
+## 🧪 **Testing**
+
+```bash
+# Run all tests
+composer run test
+
+# Run specific test suites
+php artisan test --testsuite=Feature
+php artisan test --testsuite=Unit
+```
+
+## 📚 **API Documentation**
+
+API documentation is available via Swagger/OpenAPI:
+
+- **Development**: `http://localhost:8000/api/documentation`
+- **Generated docs**: `storage/api-docs/api-docs.json`
+
+## 🔍 **Monitoring & Logging**
+
+The application includes comprehensive logging:
+
+- **API request/response logging**
+- **User activity tracking**
+- **System event logging**
+- **Error and exception logging**
+- **Performance monitoring**
+
+Logs are stored in `storage/logs/` with categorized files:
+- `muslim-finder-{date}.log` - General logs
+- `muslim-finder-success-{date}.log` - Success events
+- `muslim-finder-error-{date}.log` - Error logs
+- `muslim-finder-api-{date}.log` - API logs
+- `muslim-finder-activity-{date}.log` - User activities
+
+## 🚀 **Deployment**
+
+### **Production Checklist**
+
+1. Set `APP_ENV=production`
+2. Set `APP_DEBUG=false`
+3. Configure proper database
+4. Set up SSL certificates
+5. Configure web server (Nginx/Apache)
+6. Set up queue workers
+7. Configure log rotation
+8. Set up monitoring
+
+### **Docker Support**
+
+The application includes Laravel Sail for Docker development:
+
+```bash
+./vendor/bin/sail up -d
+```
+
+## 🤝 **Contributing**
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests for new functionality
+5. Submit a pull request
+
+## 📄 **License**
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🆘 **Support**
+
+For support and questions:
+- Create an issue in the repository
+- Contact the development team
+- Check the documentation
+
+## 🔄 **Changelog**
+
+### **v1.0.0** - Initial Release
+- Complete user management system
+- Role-based access control
+- Merchant/vendor management
+- Booking system
+- API documentation
+- Enhanced authentication system
+- Comprehensive logging
+- React frontend integration
+
+---
+
+**Built with ❤️ by the Nexworks Technology team**
