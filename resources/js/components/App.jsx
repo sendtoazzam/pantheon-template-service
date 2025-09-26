@@ -20,7 +20,7 @@ const App = () => {
 
     const showAlert = () => {
         window.Swal.fire({
-            title: 'Hello from Pantheon Template Service!',
+            title: 'Hello from Muslim Finder Backend!',
             text: 'This is a SweetAlert2 notification.',
             icon: 'success',
             confirmButtonText: 'Cool!'
@@ -44,7 +44,7 @@ const App = () => {
                 <div className="max-w-4xl mx-auto">
                     <div className="bg-white rounded-lg shadow-lg p-8">
                         <h1 className="text-4xl font-bold text-gray-800 mb-6 text-center">
-                            Pantheon Template Service
+                            Muslim Finder Backend
                         </h1>
                         
                         <div className="text-center mb-8">

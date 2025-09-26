@@ -7,6 +7,42 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+# Muslim Finder Backend
+
+A comprehensive Laravel backend API for Muslim Finder with advanced authentication, role-based access control, and multi-tenant support.
+
+## About Muslim Finder Backend
+
+Muslim Finder Backend is a robust Laravel-based API system designed to provide comprehensive backend services for Muslim-focused applications. It features advanced authentication, role-based access control, multi-tenant support, and extensive API endpoints for managing users, merchants, bookings, and more.
+
+## Key Features
+
+- **Laravel Sanctum** for API authentication
+- **Spatie Laravel Permission** for role and permission management
+- **Multi-Guard Authentication** (web, api, superadmin, admin, vendor)
+- **Two-Factor Authentication (2FA)** with TOTP support
+- **Email Verification** system
+- **Secure Password Reset** with tokens
+- **Account Lockout** protection
+- **Rate Limiting** and security policies
+- **Vendor Creation** with automatic user account setup
+- **Comprehensive Merchant Settings** with API warehouse integration
+- **API Call Logging** with detailed request/response tracking
+- **Swagger/OpenAPI Documentation** with 137+ endpoints
+- **Postman Collections** for easy testing
+
+## Recent Changes
+
+### v1.0.0 - Rebranding Update
+- ✅ Complete rebranding from Pantheon Template Service to Muslim Finder Backend
+- ✅ Renamed PantheonLoggerService to LoggerService
+- ✅ Updated all domain references from pantheon.com to muslimfinder.com
+- ✅ Enhanced vendor creation API with automatic user account setup
+- ✅ Comprehensive merchant settings with dummy API warehouse data
+- ✅ Updated Swagger documentation and Postman collections
+- ✅ Updated all frontend components and Blade templates
+- ✅ Updated configuration files and documentation
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:

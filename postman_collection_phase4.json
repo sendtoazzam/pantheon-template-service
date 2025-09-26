@@ -1,6 +1,6 @@
 {
   "info": {
-    "name": "Pantheon Template Service - Phase 4 Enhanced Security",
+    "name": "Muslim Finder Backend - Phase 4 Enhanced Security",
     "description": "Phase 4 API collection featuring enhanced authentication, 2FA support, email verification, password management, advanced user management, comprehensive role and permission management, and enhanced security features.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "version": "1.0.0"

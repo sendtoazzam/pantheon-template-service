@@ -4,7 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Log;
 
-class PantheonLoggerService
+class LoggerService
 {
     /**
      * Get the log channel name based on type

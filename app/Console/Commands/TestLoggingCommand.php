@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Services\PantheonLoggerService;
+use App\Services\LoggerService;
 use Illuminate\Console\Command;
 
 class TestLoggingCommand extends Command
@@ -29,15 +29,15 @@ class TestLoggingCommand extends Command
         $this->info('Testing Pantheon logging system...');
 
         // Test different log levels
-        PantheonLoggerService::success('This is a success message from command');
-        PantheonLoggerService::error('This is an error message from command');
-        PantheonLoggerService::warning('This is a warning message from command');
-        PantheonLoggerService::info('This is an info message from command');
-        PantheonLoggerService::debug('This is a debug message from command');
-        PantheonLoggerService::api('This is an API log message from command');
-        PantheonLoggerService::activity('This is an activity log message from command');
-        PantheonLoggerService::userAction(1, 'command_test', ['command' => 'pantheon:test-logs']);
-        PantheonLoggerService::systemEvent('logging_test_command_executed');
+        LoggerService::success('This is a success message from command');
+        LoggerService::error('This is an error message from command');
+        LoggerService::warning('This is a warning message from command');
+        LoggerService::info('This is an info message from command');
+        LoggerService::debug('This is a debug message from command');
+        LoggerService::api('This is an API log message from command');
+        LoggerService::activity('This is an activity log message from command');
+        LoggerService::userAction(1, 'command_test', ['command' => 'pantheon:test-logs']);
+        LoggerService::systemEvent('logging_test_command_executed');
 
         $prefix = config('app_logging.log_prefix')();
         $date = now()->format('Y-m-d');

@@ -1,7 +1,7 @@
 {
   "info": {
-    "name": "Pantheon Template Service - V1 API",
-    "description": "Complete API collection for Pantheon Template Service with authentication, user management, system endpoints, login history tracking, comprehensive API call logging, advanced permission management, external warehouse integration, webhook handling, module access control, enhanced security features, and comprehensive role/permission management. Supports both email and username login. Features enhanced 64-character secure tokens, user roles and permissions in responses, detailed login history, superadmin-only API logs management with cleanup functionality, role-based user creation, fine-grained permission assignment system, external API integration with parallel processing, webhook callbacks for booking management, automated cron job processing, comprehensive module access control for superadmins, 2FA authentication with TOTP support, email verification system, secure password reset with tokens, advanced user management with bulk operations, comprehensive role and permission management with statistics, and enhanced security features including account lockout and password policies.",
+    "name": "Muslim Finder Backend - V1 API",
+    "description": "Complete API collection for Muslim Finder Backend with authentication, user management, system endpoints, login history tracking, comprehensive API call logging, advanced permission management, external warehouse integration, webhook handling, module access control, enhanced security features, and comprehensive role/permission management. Supports both email and username login. Features enhanced 64-character secure tokens, user roles and permissions in responses, detailed login history, superadmin-only API logs management with cleanup functionality, role-based user creation, fine-grained permission assignment system, external API integration with parallel processing, webhook callbacks for booking management, automated cron job processing, comprehensive module access control for superadmins, 2FA authentication with TOTP support, email verification system, secure password reset with tokens, advanced user management with bulk operations, comprehensive role and permission management with statistics, and enhanced security features including account lockout and password policies.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "version": "3.0.0"
   },
@@ -1712,6 +1712,35 @@
               "raw": "{{base_url}}/api/v1/merchants/settings",
               "host": ["{{base_url}}"],
               "path": ["api", "v1", "merchants", "settings"]
+            }
+          }
+        },
+        {
+          "name": "Create Vendor (Superadmin Only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"business_name\": \"Acme Corporation\",\n  \"business_type\": \"restaurant\",\n  \"business_description\": \"Fine dining restaurant specializing in Italian cuisine\",\n  \"business_category\": \"food\",\n  \"business_size\": \"medium\",\n  \"contact_email\": \"contact@acme.com\",\n  \"contact_phone\": \"+1234567890\",\n  \"website\": \"https://acme.com\",\n  \"business_address\": \"123 Main Street\",\n  \"business_city\": \"New York\",\n  \"business_state\": \"NY\",\n  \"business_country\": \"United States\",\n  \"business_postal_code\": \"10001\",\n  \"latitude\": 40.7128,\n  \"longitude\": -74.0060,\n  \"admin_name\": \"John Doe\",\n  \"admin_email\": \"admin@acme.com\",\n  \"admin_username\": \"acme_admin\",\n  \"admin_phone\": \"+1234567890\",\n  \"admin_password\": \"SecurePassword123!\",\n  \"send_credentials\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/merchants/create-vendor",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "merchants", "create-vendor"]
             }
           }
         }

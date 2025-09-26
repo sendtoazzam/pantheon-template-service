@@ -30,31 +30,31 @@ The logging system automatically uses the `APP_NAME` from your `.env` file and c
 
 ## Usage
 
-### Using PantheonLoggerService
+### Using LoggerService
 
 ```php
-use App\Services\PantheonLoggerService;
+use App\Services\LoggerService;
 
 // Success logs
-PantheonLoggerService::success('Operation completed successfully');
+LoggerService::success('Operation completed successfully');
 
 // Error logs
-PantheonLoggerService::error('Database connection failed', ['error' => $exception->getMessage()]);
+LoggerService::error('Database connection failed', ['error' => $exception->getMessage()]);
 
 // Warning logs
-PantheonLoggerService::warning('High memory usage detected', ['usage' => '85%']);
+LoggerService::warning('High memory usage detected', ['usage' => '85%']);
 
 // API logs
-PantheonLoggerService::api('API endpoint called', ['endpoint' => '/api/users']);
+LoggerService::api('API endpoint called', ['endpoint' => '/api/users']);
 
 // Activity logs
-PantheonLoggerService::activity('User logged in', ['user_id' => 123]);
+LoggerService::activity('User logged in', ['user_id' => 123]);
 
 // User action logs
-PantheonLoggerService::userAction(123, 'profile_updated', ['changes' => ['name', 'email']]);
+LoggerService::userAction(123, 'profile_updated', ['changes' => ['name', 'email']]);
 
 // System event logs
-PantheonLoggerService::systemEvent('maintenance_started', ['duration' => '2 hours']);
+LoggerService::systemEvent('maintenance_started', ['duration' => '2 hours']);
 ```
 
 ### Direct Laravel Log Usage
@@ -127,7 +127,7 @@ APP_NAME="My New Project"
 ### Configuration Files
 - `config/app_logging.php` - Main logging configuration
 - `config/logging.php` - Laravel logging channels (updated)
-- `app/Services/PantheonLoggerService.php` - Logging service
+- `app/Services/LoggerService.php` - Logging service
 - `app/Console/Commands/` - Log management commands
 
 ## API Endpoints
@@ -194,7 +194,7 @@ Logs are automatically rotated daily and old logs are cleaned up based on the `L
 The logging system integrates with Spatie Activity Log for comprehensive activity tracking:
 
 ```php
-// This will log to both Spatie Activity Log and Pantheon Activity Log
+// This will log to both Spatie Activity Log and Muslim Finder Activity Log
 activity()
     ->causedBy($user)
     ->performedOn($model)
@@ -210,7 +210,7 @@ activity()
 ### Missing Log Entries
 - Verify the log channel is correctly configured
 - Check the log level settings
-- Ensure the PantheonLoggerService is properly imported
+- Ensure the LoggerService is properly imported
 
 ### Performance Issues
 - Monitor log file sizes

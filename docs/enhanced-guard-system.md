@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Enhanced Guard System provides a comprehensive, multi-layered authentication and authorization system for the Pantheon Template Service. It supports multiple authentication guards, role-based access control, security features, and advanced user management.
+The Enhanced Guard System provides a comprehensive, multi-layered authentication and authorization system for the Muslim Finder Backend. It supports multiple authentication guards, role-based access control, security features, and advanced user management.
 
 ## 🔐 **Guard Types**
 

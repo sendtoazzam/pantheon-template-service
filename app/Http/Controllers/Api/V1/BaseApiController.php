@@ -8,10 +8,10 @@ use App\Http\Traits\ApiResponseTrait;
 /**
  * @OA\Info(
  *      version="1.0.0",
- *      title="Pantheon Template Service API",
- *      description="A comprehensive API for the Pantheon Template Service with user management, role-based access control, and multi-tenant support.",
+ *      title="Muslim Finder Backend API",
+ *      description="A comprehensive API for the Muslim Finder Backend with user management, role-based access control, and multi-tenant support.",
  *      @OA\Contact(
- *          email="support@pantheon-template-service.com"
+ *          email="support@muslimfinder.com"
  *      ),
  *      @OA\License(
  *          name="MIT",
@@ -21,7 +21,7 @@ use App\Http\Traits\ApiResponseTrait;
  *
  * @OA\Server(
  *      url=L5_SWAGGER_CONST_HOST,
- *      description="Pantheon Template Service API Server"
+ *      description="Muslim Finder Backend API Server"
  * )
  *
  * @OA\SecurityScheme(

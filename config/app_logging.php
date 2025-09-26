@@ -21,7 +21,7 @@ return [
     |
     */
 
-    'app_name' => env('APP_NAME', 'Laravel'),
+    'app_name' => env('APP_NAME', 'Muslim Finder Backend'),
 
     /*
     |--------------------------------------------------------------------------

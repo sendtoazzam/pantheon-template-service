@@ -1,10 +1,10 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "Pantheon Template Service API",
-        "description": "A comprehensive API for the Pantheon Template Service with user management, role-based access control, and multi-tenant support.",
+        "title": "Muslim Finder Backend API",
+        "description": "A comprehensive API for the Muslim Finder Backend with user management, role-based access control, and multi-tenant support.",
         "contact": {
-            "email": "support@pantheon-template-service.com"
+            "email": "support@muslimfinder.com"
         },
         "license": {
             "name": "MIT",
@@ -15,7 +15,7 @@
     "servers": [
         {
             "url": "http://my-default-host.com",
-            "description": "Pantheon Template Service API Server"
+            "description": "Muslim Finder Backend API Server"
         }
     ],
     "paths": {
@@ -4315,6 +4315,186 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/NotFoundResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/merchants/create-vendor": {
+            "post": {
+                "tags": [
+                    "Merchants"
+                ],
+                "summary": "Create vendor with automatic user account (Superadmin only)",
+                "operationId": "f59998536c182ff0fb2ea2e7df7177ad",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "business_name",
+                                    "business_type",
+                                    "admin_name",
+                                    "admin_email",
+                                    "admin_username",
+                                    "admin_phone"
+                                ],
+                                "properties": {
+                                    "business_name": {
+                                        "type": "string",
+                                        "example": "Acme Corporation"
+                                    },
+                                    "business_type": {
+                                        "type": "string",
+                                        "example": "restaurant"
+                                    },
+                                    "business_description": {
+                                        "type": "string",
+                                        "example": "Fine dining restaurant"
+                                    },
+                                    "business_category": {
+                                        "type": "string",
+                                        "example": "food"
+                                    },
+                                    "business_size": {
+                                        "type": "string",
+                                        "example": "medium"
+                                    },
+                                    "contact_email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "contact@acme.com"
+                                    },
+                                    "contact_phone": {
+                                        "type": "string",
+                                        "example": "+1234567890"
+                                    },
+                                    "website": {
+                                        "type": "string",
+                                        "example": "https://acme.com"
+                                    },
+                                    "business_address": {
+                                        "type": "string",
+                                        "example": "123 Main St"
+                                    },
+                                    "business_city": {
+                                        "type": "string",
+                                        "example": "New York"
+                                    },
+                                    "business_state": {
+                                        "type": "string",
+                                        "example": "NY"
+                                    },
+                                    "business_country": {
+                                        "type": "string",
+                                        "example": "United States"
+                                    },
+                                    "business_postal_code": {
+                                        "type": "string",
+                                        "example": "10001"
+                                    },
+                                    "latitude": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 40.7128
+                                    },
+                                    "longitude": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": -74.006
+                                    },
+                                    "admin_name": {
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "admin_email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "admin@acme.com"
+                                    },
+                                    "admin_username": {
+                                        "type": "string",
+                                        "example": "acme_admin"
+                                    },
+                                    "admin_phone": {
+                                        "type": "string",
+                                        "example": "+1234567890"
+                                    },
+                                    "admin_password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "SecurePassword123!"
+                                    },
+                                    "send_credentials": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Vendor created successfully with admin user",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Vendor created successfully with admin user"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "merchant": {
+                                                    "$ref": "#/components/schemas/Merchant"
+                                                },
+                                                "admin_user": {
+                                                    "$ref": "#/components/schemas/User"
+                                                },
+                                                "admin_token": {
+                                                    "type": "string",
+                                                    "example": "1|xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden - Superadmin access required",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ForbiddenResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
                                 }
                             }
                         }

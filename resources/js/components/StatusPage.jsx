@@ -158,7 +158,7 @@ const StatusPage = () => {
                         <div className="flex items-center">
                             <div className="flex-shrink-0">
                                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                                    Pantheon Template Service
+                                    Muslim Finder Backend
                                 </h1>
                                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                                     System Status
@@ -352,7 +352,7 @@ const StatusPage = () => {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
                     <div className="flex items-center justify-between">
                         <div className="text-sm text-gray-500 dark:text-gray-400">
-                            © {new Date().getFullYear()} Pantheon Template Service. All rights reserved.
+                            © {new Date().getFullYear()} Muslim Finder Backend. All rights reserved.
                         </div>
                         <div className="text-sm text-gray-500 dark:text-gray-400">
                             Status page powered by React & TailwindCSS

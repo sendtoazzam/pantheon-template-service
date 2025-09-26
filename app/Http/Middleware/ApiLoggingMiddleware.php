@@ -3,7 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\ApiCallLog;
-use App\Services\PantheonLoggerService;
+use App\Services\LoggerService;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -22,7 +22,7 @@ class ApiLoggingMiddleware
         $startMemory = memory_get_usage(true);
         
         // Log the incoming request to file (existing functionality)
-        PantheonLoggerService::apiRequest(
+        LoggerService::apiRequest(
             $request->method(),
             $request->fullUrl(),
             $request->all(),
@@ -37,7 +37,7 @@ class ApiLoggingMiddleware
         $duration = round(($endTime - $startTime) * 1000, 2); // Convert to milliseconds
 
         // Log the response to file (existing functionality)
-        PantheonLoggerService::apiResponse(
+        LoggerService::apiResponse(
             $request->method(),
             $request->fullUrl(),
             [
@@ -54,17 +54,17 @@ class ApiLoggingMiddleware
 
         // Log based on response status to file
         if ($response->getStatusCode() >= 500) {
-            PantheonLoggerService::error("API Error: {$request->method()} {$request->fullUrl()}", [
+            LoggerService::error("API Error: {$request->method()} {$request->fullUrl()}", [
                 'status_code' => $response->getStatusCode(),
                 'duration_ms' => $duration
             ]);
         } elseif ($response->getStatusCode() >= 400) {
-            PantheonLoggerService::warning("API Warning: {$request->method()} {$request->fullUrl()}", [
+            LoggerService::warning("API Warning: {$request->method()} {$request->fullUrl()}", [
                 'status_code' => $response->getStatusCode(),
                 'duration_ms' => $duration
             ]);
         } else {
-            PantheonLoggerService::success("API Success: {$request->method()} {$request->fullUrl()}", [
+            LoggerService::success("API Success: {$request->method()} {$request->fullUrl()}", [
                 'status_code' => $response->getStatusCode(),
                 'duration_ms' => $duration
             ]);
@@ -139,7 +139,7 @@ class ApiLoggingMiddleware
             ]);
         } catch (\Exception $e) {
             // Log the error but don't break the request
-            PantheonLoggerService::error('Failed to store API call log', [
+            LoggerService::error('Failed to store API call log', [
                 'error' => $e->getMessage(),
                 'url' => $request->fullUrl(),
             ]);

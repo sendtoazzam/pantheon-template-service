@@ -4,7 +4,7 @@ namespace App\Http\Traits;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
-use App\Services\PantheonLoggerService;
+use App\Services\LoggerService;
 
 trait ApiResponseTrait
 {
@@ -20,7 +20,7 @@ trait ApiResponseTrait
             'timestamp' => now()->toISOString()
         ];
 
-        PantheonLoggerService::apiResponse(request()->method(), request()->path(), $response, $statusCode);
+        LoggerService::apiResponse(request()->method(), request()->path(), $response, $statusCode);
         
         return response()->json($response, $statusCode);
     }
@@ -37,7 +37,7 @@ trait ApiResponseTrait
             'timestamp' => now()->toISOString()
         ];
 
-        PantheonLoggerService::apiResponse(request()->method(), request()->path(), $response, $statusCode);
+        LoggerService::apiResponse(request()->method(), request()->path(), $response, $statusCode);
         
         return response()->json($response, $statusCode);
     }
@@ -103,7 +103,7 @@ trait ApiResponseTrait
             'timestamp' => now()->toISOString()
         ];
 
-        PantheonLoggerService::apiResponse(request()->method(), request()->path(), $response, 200);
+        LoggerService::apiResponse(request()->method(), request()->path(), $response, 200);
         
         return response()->json($response);
     }

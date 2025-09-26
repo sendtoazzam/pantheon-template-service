@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     
-    <title>Pantheon Template Service - System Status</title>
+    <title>Muslim Finder Backend - System Status</title>
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">

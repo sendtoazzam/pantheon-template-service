@@ -1,4 +1,4 @@
-# Pantheon Template Service - Development Makefile
+# Muslim Finder Backend - Development Makefile
 # ================================================
 
 # Colors for output
@@ -20,7 +20,7 @@ HOST=127.0.0.1
 # Help target
 .PHONY: help
 help: ## Show this help message
-	@echo "$(CYAN)Pantheon Template Service - Development Commands$(NC)"
+	@echo "$(CYAN)Muslim Finder Backend - Development Commands$(NC)"
 	@echo "$(YELLOW)===============================================$(NC)"
 	@echo ""
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "$(GREEN)%-20s$(NC) %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -31,7 +31,7 @@ help: ## Show this help message
 
 .PHONY: install
 install: ## Complete installation (composer + npm + database setup)
-	@echo "$(BLUE)Installing Pantheon Template Service...$(NC)"
+	@echo "$(BLUE)Installing Muslim Finder Backend...$(NC)"
 	@make composer-install
 	@make npm-install
 	@make setup-env
@@ -336,7 +336,7 @@ logs-db: ## Show database logs
 
 .PHONY: status
 status: ## Show application status
-	@echo "$(CYAN)Pantheon Template Service Status$(NC)"
+	@echo "$(CYAN)Muslim Finder Backend Status$(NC)"
 	@echo "$(YELLOW)===============================$(NC)"
 	@echo "$(GREEN)PHP Version:$(NC) $$(php --version | head -1)"
 	@echo "$(GREEN)Node Version:$(NC) $$(node --version)"

@@ -5,14 +5,14 @@ return [
     'documentations' => [
         'default' => [
             'api' => [
-                'title' => 'Pantheon Template Service API',
+                'title' => 'Muslim Finder Backend API',
                 'version' => '1.0.0',
-                'description' => 'A comprehensive API for the Pantheon Template Service with user management, role-based access control, and multi-tenant support.',
-                'termsOfService' => 'https://pantheon-template-service.com/terms',
+                'description' => 'A comprehensive API for the Muslim Finder Backend with user management, role-based access control, and multi-tenant support.',
+                'termsOfService' => 'https://muslimfinder.com/terms',
                 'contact' => [
                     'name' => 'API Support',
-                    'email' => 'support@pantheon-template-service.com',
-                    'url' => 'https://pantheon-template-service.com/support'
+                    'email' => 'support@muslimfinder.com',
+                    'url' => 'https://muslimfinder.com/support'
                 ],
                 'license' => [
                     'name' => 'MIT',

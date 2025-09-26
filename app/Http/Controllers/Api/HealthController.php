@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
-use App\Services\PantheonLoggerService;
+use App\Services\LoggerService;
 
 class HealthController extends Controller
 {
@@ -19,7 +19,7 @@ class HealthController extends Controller
      */
     public function health(Request $request)
     {
-        PantheonLoggerService::apiRequest('GET', '/api/health');
+        LoggerService::apiRequest('GET', '/api/health');
         
         $response = [
             'status' => 'success',
@@ -37,8 +37,8 @@ class HealthController extends Controller
             ]
         ];
 
-        PantheonLoggerService::apiResponse('GET', '/api/health', $response, 200);
-        PantheonLoggerService::success('Health check endpoint accessed successfully');
+        LoggerService::apiResponse('GET', '/api/health', $response, 200);
+        LoggerService::success('Health check endpoint accessed successfully');
         
         return $this->successResponse($response);
     }
@@ -48,7 +48,7 @@ class HealthController extends Controller
      */
     public function detailedHealth(Request $request)
     {
-        PantheonLoggerService::apiRequest('GET', '/api/health/detailed');
+        LoggerService::apiRequest('GET', '/api/health/detailed');
         
         $checks = [
             'database' => $this->checkDatabase(),
@@ -89,8 +89,8 @@ class HealthController extends Controller
             ]
         ];
 
-        PantheonLoggerService::apiResponse('GET', '/api/health/detailed', $response, 200);
-        PantheonLoggerService::info('Detailed health check completed', ['status' => $overallStatus]);
+        LoggerService::apiResponse('GET', '/api/health/detailed', $response, 200);
+        LoggerService::info('Detailed health check completed', ['status' => $overallStatus]);
         
         return $this->successResponse($response);
     }

@@ -1,7 +1,7 @@
 {
   "info": {
-    "name": "Pantheon Template Service - Enhanced Guard API",
-    "description": "Enhanced API collection for Pantheon Template Service with multi-guard authentication, role-based access control, and advanced security features. Supports superadmin, admin, vendor, and user guards with enhanced security settings.",
+    "name": "Muslim Finder Backend - Enhanced Guard API",
+    "description": "Enhanced API collection for Muslim Finder Backend with multi-guard authentication, role-based access control, and advanced security features. Supports superadmin, admin, vendor, and user guards with enhanced security settings.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "version": "2.0.0"
   },

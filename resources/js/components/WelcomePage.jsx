@@ -53,7 +53,7 @@ const WelcomePage = ({ onLoad }) => {
                         <div className="flex items-center space-x-2">
                             <IconRocket className="w-8 h-8 text-blue-600" />
                             <span className="text-xl font-bold text-gray-900 dark:text-white">
-                                Pantheon
+                                Muslim Finder
                             </span>
                         </div>
                         <div className="text-sm text-gray-500 dark:text-gray-400">
@@ -71,7 +71,7 @@ const WelcomePage = ({ onLoad }) => {
                     </h1>
                     
                     <p className="text-xl text-gray-600 dark:text-gray-400 mb-12 max-w-2xl mx-auto">
-                        Welcome to Pantheon Template Service - A modern Laravel application with React frontend.
+                        Welcome to Muslim Finder Backend - A modern Laravel application with React frontend.
                     </p>
 
                     {/* Tech Stack */}
@@ -129,7 +129,7 @@ const WelcomePage = ({ onLoad }) => {
             <footer className="bg-gray-50 dark:bg-gray-800 mt-20">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     <div className="text-center text-gray-500 dark:text-gray-400">
-                        <p>&copy; 2025 {window.Laravel?.appName || 'Pantheon Template Service'}. Built with Laravel, React, and TailwindCSS.</p>
+                        <p>&copy; 2025 {window.Laravel?.appName || 'Muslim Finder Backend'}. Built with Laravel, React, and TailwindCSS.</p>
                     </div>
                 </div>
             </footer>

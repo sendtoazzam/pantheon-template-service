@@ -127,7 +127,7 @@ const HealthDashboard = () => {
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900">System Health Dashboard</h1>
-                    <p className="text-gray-600">Monitor your Pantheon Template Service status</p>
+                    <p className="text-gray-600">Monitor your Muslim Finder Backend status</p>
                 </div>
                 <div className="flex items-center space-x-4">
                     {lastUpdated && (

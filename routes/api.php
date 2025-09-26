@@ -3,7 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\HealthController;
-use App\Services\PantheonLoggerService;
+use App\Services\LoggerService;
 
 /*
 |--------------------------------------------------------------------------
@@ -119,18 +119,23 @@ Route::prefix('v1')->group(function () {
                 Route::delete('/{id}', [App\Http\Controllers\Api\V1\PermissionController::class, 'destroy']);
             });
 
-        // Merchant routes
-        Route::prefix('merchants')->group(function () {
-            Route::get('/', [App\Http\Controllers\Api\V1\MerchantController::class, 'index']);
-            Route::get('/profile', [App\Http\Controllers\Api\V1\MerchantController::class, 'profile']);
-            Route::put('/profile', [App\Http\Controllers\Api\V1\MerchantController::class, 'updateProfile']);
-            Route::get('/settings', [App\Http\Controllers\Api\V1\MerchantController::class, 'settings']);
-            Route::put('/settings', [App\Http\Controllers\Api\V1\MerchantController::class, 'updateSettings']);
-            Route::get('/{id}', [App\Http\Controllers\Api\V1\MerchantController::class, 'show']);
-            Route::post('/', [App\Http\Controllers\Api\V1\MerchantController::class, 'store']);
-            Route::put('/{id}', [App\Http\Controllers\Api\V1\MerchantController::class, 'update']);
-            Route::delete('/{id}', [App\Http\Controllers\Api\V1\MerchantController::class, 'destroy']);
-        });
+            // Merchant routes
+            Route::prefix('merchants')->group(function () {
+                Route::get('/', [App\Http\Controllers\Api\V1\MerchantController::class, 'index']);
+                Route::get('/profile', [App\Http\Controllers\Api\V1\MerchantController::class, 'profile']);
+                Route::put('/profile', [App\Http\Controllers\Api\V1\MerchantController::class, 'updateProfile']);
+                Route::get('/settings', [App\Http\Controllers\Api\V1\MerchantController::class, 'settings']);
+                Route::put('/settings', [App\Http\Controllers\Api\V1\MerchantController::class, 'updateSettings']);
+                Route::get('/{id}', [App\Http\Controllers\Api\V1\MerchantController::class, 'show']);
+                Route::post('/', [App\Http\Controllers\Api\V1\MerchantController::class, 'store']);
+                Route::put('/{id}', [App\Http\Controllers\Api\V1\MerchantController::class, 'update']);
+                Route::delete('/{id}', [App\Http\Controllers\Api\V1\MerchantController::class, 'destroy']);
+                
+                // Superadmin only - Create vendor with automatic user account
+                Route::middleware('role:superadmin')->group(function () {
+                    Route::post('/create-vendor', [App\Http\Controllers\Api\V1\MerchantController::class, 'createVendor']);
+                });
+            });
 
         // Booking routes
         Route::prefix('bookings')->group(function () {
@@ -269,11 +274,11 @@ Route::prefix('v1')->group(function () {
 
 // Legacy routes for backward compatibility (moved to end to avoid conflicts)
 Route::get('/health', function () {
-    PantheonLoggerService::apiRequest('GET', '/api/health');
+    LoggerService::apiRequest('GET', '/api/health');
     
     $response = [
         'status' => 'success',
-        'message' => 'Pantheon Template Service is running!',
+        'message' => 'Muslim Finder Backend is running!',
         'timestamp' => now(),
         'version' => '1.0.0',
         'features' => [
@@ -285,22 +290,22 @@ Route::get('/health', function () {
         ]
     ];
 
-    PantheonLoggerService::apiResponse('GET', '/api/health', $response, 200);
-    PantheonLoggerService::success('Health check endpoint accessed successfully');
+    LoggerService::apiResponse('GET', '/api/health', $response, 200);
+    LoggerService::success('Health check endpoint accessed successfully');
     
     return response()->json($response);
 });
 
 Route::get('/logs/test', function () {
-    PantheonLoggerService::success('This is a success message test');
-    PantheonLoggerService::error('This is an error message test');
-    PantheonLoggerService::warning('This is a warning message test');
-    PantheonLoggerService::info('This is an info message test');
-    PantheonLoggerService::debug('This is a debug message test');
-    PantheonLoggerService::api('This is an API log message test');
-    PantheonLoggerService::activity('This is an activity log message test');
-    PantheonLoggerService::userAction(1, 'test_logging', ['test' => true]);
-    PantheonLoggerService::systemEvent('logging_test_completed');
+    LoggerService::success('This is a success message test');
+    LoggerService::error('This is an error message test');
+    LoggerService::warning('This is a warning message test');
+    LoggerService::info('This is an info message test');
+    LoggerService::debug('This is a debug message test');
+    LoggerService::api('This is an API log message test');
+    LoggerService::activity('This is an activity log message test');
+    LoggerService::userAction(1, 'test_logging', ['test' => true]);
+    LoggerService::systemEvent('logging_test_completed');
 
     $prefix = config('app_logging.log_prefix')();
     $date = now()->format('Y-m-d');
@@ -321,7 +326,7 @@ Route::get('/logs/test', function () {
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    PantheonLoggerService::userAction($request->user()->id, 'user_profile_accessed');
+    LoggerService::userAction($request->user()->id, 'user_profile_accessed');
     return response()->json([
         'success' => true,
         'data' => $request->user(),
