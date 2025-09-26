@@ -90,13 +90,55 @@ Route::prefix('v1')->group(function () {
         // Booking routes
         Route::prefix('bookings')->group(function () {
             Route::get('/', [App\Http\Controllers\Api\V1\BookingController::class, 'index']);
-            Route::get('/my-bookings', [App\Http\Controllers\Api\V1\BookingController::class, 'myBookings']);
-            Route::get('/merchant-bookings', [App\Http\Controllers\Api\V1\BookingController::class, 'merchantBookings']);
+            Route::get('/my', [App\Http\Controllers\Api\V1\BookingController::class, 'myBookings']);
+            Route::get('/merchant', [App\Http\Controllers\Api\V1\BookingController::class, 'merchantBookings']);
             Route::get('/{id}', [App\Http\Controllers\Api\V1\BookingController::class, 'show']);
             Route::post('/', [App\Http\Controllers\Api\V1\BookingController::class, 'store']);
             Route::put('/{id}', [App\Http\Controllers\Api\V1\BookingController::class, 'update']);
             Route::put('/{id}/status', [App\Http\Controllers\Api\V1\BookingController::class, 'updateStatus']);
             Route::delete('/{id}', [App\Http\Controllers\Api\V1\BookingController::class, 'destroy']);
+        });
+
+        // Notification routes
+        Route::prefix('notifications')->group(function () {
+            Route::get('/', [App\Http\Controllers\Api\V1\NotificationController::class, 'index']);
+            Route::get('/unread-count', [App\Http\Controllers\Api\V1\NotificationController::class, 'unreadCount']);
+            Route::get('/{id}', [App\Http\Controllers\Api\V1\NotificationController::class, 'show']);
+            Route::post('/', [App\Http\Controllers\Api\V1\NotificationController::class, 'store']);
+            Route::put('/{id}/read', [App\Http\Controllers\Api\V1\NotificationController::class, 'markAsRead']);
+            Route::put('/mark-all-read', [App\Http\Controllers\Api\V1\NotificationController::class, 'markAllAsRead']);
+            Route::delete('/{id}', [App\Http\Controllers\Api\V1\NotificationController::class, 'destroy']);
+            Route::delete('/clear-all', [App\Http\Controllers\Api\V1\NotificationController::class, 'clearAll']);
+        });
+
+        // User Profile routes
+        Route::prefix('user-profiles')->group(function () {
+            Route::get('/', [App\Http\Controllers\Api\V1\UserProfileController::class, 'index']);
+            Route::get('/my', [App\Http\Controllers\Api\V1\UserProfileController::class, 'myProfile']);
+            Route::put('/my', [App\Http\Controllers\Api\V1\UserProfileController::class, 'updateMyProfile']);
+            Route::get('/{id}', [App\Http\Controllers\Api\V1\UserProfileController::class, 'show']);
+            Route::post('/', [App\Http\Controllers\Api\V1\UserProfileController::class, 'store']);
+            Route::put('/{id}', [App\Http\Controllers\Api\V1\UserProfileController::class, 'update']);
+            Route::delete('/{id}', [App\Http\Controllers\Api\V1\UserProfileController::class, 'destroy']);
+        });
+
+        // User Preference routes
+        Route::prefix('user-preferences')->group(function () {
+            Route::get('/', [App\Http\Controllers\Api\V1\UserPreferenceController::class, 'index']);
+            Route::get('/{key}', [App\Http\Controllers\Api\V1\UserPreferenceController::class, 'show']);
+            Route::post('/', [App\Http\Controllers\Api\V1\UserPreferenceController::class, 'store']);
+            Route::put('/{key}', [App\Http\Controllers\Api\V1\UserPreferenceController::class, 'update']);
+            Route::delete('/{key}', [App\Http\Controllers\Api\V1\UserPreferenceController::class, 'destroy']);
+            Route::post('/bulk-update', [App\Http\Controllers\Api\V1\UserPreferenceController::class, 'bulkUpdate']);
+        });
+
+        // User Activity routes
+        Route::prefix('user-activities')->group(function () {
+            Route::get('/', [App\Http\Controllers\Api\V1\UserActivityController::class, 'index']);
+            Route::get('/my', [App\Http\Controllers\Api\V1\UserActivityController::class, 'myActivities']);
+            Route::get('/statistics', [App\Http\Controllers\Api\V1\UserActivityController::class, 'statistics']);
+            Route::get('/{id}', [App\Http\Controllers\Api\V1\UserActivityController::class, 'show']);
+            Route::post('/', [App\Http\Controllers\Api\V1\UserActivityController::class, 'store']);
         });
 
         // Profile routes (permission-based access)

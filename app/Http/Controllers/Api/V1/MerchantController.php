@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Http\Controllers\Controller;
-use App\Http\Traits\ApiResponseTrait;
-use App\Models\User;
+use App\Http\Controllers\Api\V1\BaseApiController;
+use App\Http\Resources\MerchantResource;
+use App\Models\Merchant;
+use App\Models\MerchantSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\ValidationException;
-use OpenApi\Annotations as OA;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 /**
  * @OA\Tag(
@@ -18,21 +19,40 @@ use OpenApi\Annotations as OA;
  */
 class MerchantController extends BaseApiController
 {
-    use ApiResponseTrait;
-
     /**
      * @OA\Get(
      *     path="/api/v1/merchants",
      *     summary="Get all merchants",
      *     tags={"Merchants"},
      *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="status",
+     *         in="query",
+     *         description="Filter by status",
+     *         required=false,
+     *         @OA\Schema(type="string", enum={"active", "inactive", "suspended", "pending"})
+     *     ),
+     *     @OA\Parameter(
+     *         name="business_type",
+     *         in="query",
+     *         description="Filter by business type",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         description="Number of merchants per page",
+     *         required=false,
+     *         @OA\Schema(type="integer", default=15)
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="Merchants retrieved successfully",
      *         @OA\JsonContent(
      *             @OA\Property(property="success", type="boolean", example=true),
      *             @OA\Property(property="message", type="string", example="Merchants retrieved successfully"),
-     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/User"))
+     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Merchant"))
      *         )
      *     ),
      *     @OA\Response(
@@ -45,18 +65,46 @@ class MerchantController extends BaseApiController
     public function index(Request $request)
     {
         try {
-            $merchants = User::role('vendor')->with('roles', 'permissions')->paginate(15);
-            
-            return $this->success($merchants, 'Merchants retrieved successfully');
+            $query = Merchant::with(['user', 'settings']);
+
+            // Apply filters
+            if ($request->has('status')) {
+                $query->where('status', $request->status);
+            }
+
+            if ($request->has('business_type')) {
+                $query->where('business_type', $request->business_type);
+            }
+
+            if ($request->has('search')) {
+                $search = $request->search;
+                $query->where(function($q) use ($search) {
+                    $q->where('business_name', 'like', "%{$search}%")
+                      ->orWhere('description', 'like', "%{$search}%")
+                      ->orWhere('city', 'like', "%{$search}%")
+                      ->orWhere('country', 'like', "%{$search}%");
+                });
+            }
+
+            // Check if user is admin/superadmin for full access, otherwise only their own
+            $user = Auth::user();
+            if (!$user->hasRole(['admin', 'superadmin'])) {
+                $query->where('user_id', $user->id);
+            }
+
+            $merchants = $query->paginate($request->get('per_page', 15));
+
+            return $this->paginated($merchants, 'Merchants retrieved successfully');
+
         } catch (\Exception $e) {
-            return $this->error('Failed to retrieve merchants', 500, $e->getMessage());
+            return $this->error('Failed to retrieve merchants', $e->getMessage(), 500);
         }
     }
 
     /**
      * @OA\Get(
      *     path="/api/v1/merchants/profile",
-     *     summary="Get authenticated merchant profile",
+     *     summary="Get current user's merchant profile",
      *     tags={"Merchants"},
      *     security={{"bearerAuth":{}}},
      *     @OA\Response(
@@ -65,46 +113,57 @@ class MerchantController extends BaseApiController
      *         @OA\JsonContent(
      *             @OA\Property(property="success", type="boolean", example=true),
      *             @OA\Property(property="message", type="string", example="Merchant profile retrieved successfully"),
-     *             @OA\Property(property="data", type="object", ref="#/components/schemas/User")
+     *             @OA\Property(property="data", type="object", ref="#/components/schemas/Merchant")
      *         )
      *     ),
      *     @OA\Response(
-     *         response=401,
-     *         description="Unauthenticated",
-     *         @OA\JsonContent(ref="#/components/schemas/UnauthorizedResponse")
+     *         response=404,
+     *         description="Merchant profile not found",
+     *         @OA\JsonContent(ref="#/components/schemas/NotFoundResponse")
      *     )
      * )
      */
-    public function profile(Request $request)
+    public function profile()
     {
         try {
-            $user = $request->user();
-            
-            if (!$user->hasRole('vendor')) {
-                return $this->error('Access denied. Vendor role required.', 403);
+            $user = Auth::user();
+            $merchant = Merchant::with(['user', 'settings'])
+                ->where('user_id', $user->id)
+                ->first();
+
+            if (!$merchant) {
+                return $this->notFound('Merchant profile not found');
             }
-            
-            $merchant = $user->load('roles', 'permissions');
-            
-            return $this->success($merchant, 'Merchant profile retrieved successfully');
+
+            return $this->success(new MerchantResource($merchant), 'Merchant profile retrieved successfully');
+
         } catch (\Exception $e) {
-            return $this->error('Failed to retrieve merchant profile', 500, $e->getMessage());
+            return $this->error('Failed to retrieve merchant profile', $e->getMessage(), 500);
         }
     }
 
     /**
      * @OA\Put(
      *     path="/api/v1/merchants/profile",
-     *     summary="Update authenticated merchant profile",
+     *     summary="Update current user's merchant profile",
      *     tags={"Merchants"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             @OA\Property(property="name", type="string", example="Merchant Name"),
-     *             @OA\Property(property="username", type="string", example="merchant"),
+     *             @OA\Property(property="business_name", type="string", example="Acme Corporation"),
+     *             @OA\Property(property="business_type", type="string", example="restaurant"),
+     *             @OA\Property(property="description", type="string", example="Fine dining restaurant"),
+     *             @OA\Property(property="website", type="string", example="https://acme.com"),
      *             @OA\Property(property="phone", type="string", example="+1234567890"),
-     *             @OA\Property(property="avatar", type="string", example="http://example.com/avatar.jpg"),
+     *             @OA\Property(property="email", type="string", format="email", example="contact@acme.com"),
+     *             @OA\Property(property="address", type="string", example="123 Main St, City, State 12345"),
+     *             @OA\Property(property="city", type="string", example="New York"),
+     *             @OA\Property(property="state", type="string", example="NY"),
+     *             @OA\Property(property="country", type="string", example="United States"),
+     *             @OA\Property(property="postal_code", type="string", example="10001"),
+     *             @OA\Property(property="latitude", type="number", format="float", example=40.7128),
+     *             @OA\Property(property="longitude", type="number", format="float", example=-74.0060)
      *         )
      *     ),
      *     @OA\Response(
@@ -113,7 +172,7 @@ class MerchantController extends BaseApiController
      *         @OA\JsonContent(
      *             @OA\Property(property="success", type="boolean", example=true),
      *             @OA\Property(property="message", type="string", example="Merchant profile updated successfully"),
-     *             @OA\Property(property="data", type="object", ref="#/components/schemas/User")
+     *             @OA\Property(property="data", type="object", ref="#/components/schemas/Merchant")
      *         )
      *     ),
      *     @OA\Response(
@@ -126,26 +185,45 @@ class MerchantController extends BaseApiController
     public function updateProfile(Request $request)
     {
         try {
-            $user = $request->user();
-            
-            if (!$user->hasRole('vendor')) {
-                return $this->error('Access denied. Vendor role required.', 403);
+            $user = Auth::user();
+            $merchant = Merchant::where('user_id', $user->id)->first();
+
+            if (!$merchant) {
+                return $this->notFound('Merchant profile not found');
             }
 
-            $request->validate([
-                'name' => 'sometimes|string|max:255',
-                'username' => 'sometimes|string|max:255|unique:users,username,' . $user->id,
-                'phone' => 'sometimes|nullable|string|max:255',
-                'avatar' => 'sometimes|nullable|string|max:255',
+            $validator = Validator::make($request->all(), [
+                'business_name' => 'required|string|max:255',
+                'business_type' => 'required|string|max:100',
+                'description' => 'nullable|string|max:1000',
+                'website' => 'nullable|url|max:255',
+                'phone' => 'required|string|max:20',
+                'email' => 'required|email|max:255',
+                'address' => 'required|string|max:500',
+                'city' => 'required|string|max:100',
+                'state' => 'required|string|max:100',
+                'country' => 'required|string|max:100',
+                'postal_code' => 'required|string|max:20',
+                'latitude' => 'nullable|numeric|between:-90,90',
+                'longitude' => 'nullable|numeric|between:-180,180',
             ]);
 
-            $user->update($request->only(['name', 'username', 'phone', 'avatar']));
+            if ($validator->fails()) {
+                return $this->validationError($validator->errors());
+            }
 
-            return $this->success($user->fresh(), 'Merchant profile updated successfully');
-        } catch (ValidationException $e) {
-            return $this->error('Validation failed', 422, $e->errors());
+            $merchant->update($request->only([
+                'business_name', 'business_type', 'description', 'website',
+                'phone', 'email', 'address', 'city', 'state', 'country',
+                'postal_code', 'latitude', 'longitude'
+            ]));
+
+            $merchant->load(['user', 'settings']);
+
+            return $this->success(new MerchantResource($merchant), 'Merchant profile updated successfully');
+
         } catch (\Exception $e) {
-            return $this->error('Failed to update merchant profile', 500, $e->getMessage());
+            return $this->error('Failed to update merchant profile', $e->getMessage(), 500);
         }
     }
 
@@ -161,43 +239,41 @@ class MerchantController extends BaseApiController
      *         @OA\JsonContent(
      *             @OA\Property(property="success", type="boolean", example=true),
      *             @OA\Property(property="message", type="string", example="Merchant settings retrieved successfully"),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="api_key", type="string", example="pk_test_123456789"),
-     *                 @OA\Property(property="webhook_url", type="string", example="https://example.com/webhook"),
-     *                 @OA\Property(property="settings", type="object", example={"theme": "dark", "notifications": true})
-     *             )
+     *             @OA\Property(property="data", type="object", ref="#/components/schemas/MerchantSetting")
      *         )
-     *     ),
-     *     @OA\Response(
-     *         response=401,
-     *         description="Unauthenticated",
-     *         @OA\JsonContent(ref="#/components/schemas/UnauthorizedResponse")
      *     )
      * )
      */
-    public function settings(Request $request)
+    public function settings()
     {
         try {
-            $user = $request->user();
-            
-            if (!$user->hasRole('vendor')) {
-                return $this->error('Access denied. Vendor role required.', 403);
+            $user = Auth::user();
+            $merchant = Merchant::where('user_id', $user->id)->first();
+
+            if (!$merchant) {
+                return $this->notFound('Merchant profile not found');
             }
 
-            // Mock settings data - in a real app, this would come from a merchant_settings table
-            $settings = [
-                'api_key' => 'pk_test_' . str_random(32),
-                'webhook_url' => 'https://example.com/webhook',
-                'settings' => [
-                    'theme' => 'light',
-                    'notifications' => true,
-                    'auto_approve_bookings' => false,
-                ]
-            ];
+            $settings = MerchantSetting::where('merchant_id', $merchant->id)->first();
+
+            if (!$settings) {
+                // Create default settings
+                $settings = MerchantSetting::create([
+                    'merchant_id' => $merchant->id,
+                    'api_key' => 'merchant_' . uniqid(),
+                    'api_secret' => 'secret_' . bin2hex(random_bytes(16)),
+                    'currency' => 'USD',
+                    'timezone' => 'UTC',
+                    'language' => 'en',
+                    'settings' => [],
+                    'is_active' => true,
+                ]);
+            }
 
             return $this->success($settings, 'Merchant settings retrieved successfully');
+
         } catch (\Exception $e) {
-            return $this->error('Failed to retrieve merchant settings', 500, $e->getMessage());
+            return $this->error('Failed to retrieve merchant settings', $e->getMessage(), 500);
         }
     }
 
@@ -210,7 +286,12 @@ class MerchantController extends BaseApiController
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             @OA\Property(property="webhook_url", type="string", example="https://example.com/webhook"),
+     *             @OA\Property(property="webhook_url", type="string", example="https://merchant.com/webhook"),
+     *             @OA\Property(property="callback_url", type="string", example="https://merchant.com/callback"),
+     *             @OA\Property(property="return_url", type="string", example="https://merchant.com/return"),
+     *             @OA\Property(property="currency", type="string", example="USD"),
+     *             @OA\Property(property="timezone", type="string", example="America/New_York"),
+     *             @OA\Property(property="language", type="string", example="en"),
      *             @OA\Property(property="settings", type="object", example={"theme": "dark", "notifications": true})
      *         )
      *     ),
@@ -219,38 +300,56 @@ class MerchantController extends BaseApiController
      *         description="Merchant settings updated successfully",
      *         @OA\JsonContent(
      *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="message", type="string", example="Merchant settings updated successfully")
+     *             @OA\Property(property="message", type="string", example="Merchant settings updated successfully"),
+     *             @OA\Property(property="data", type="object", ref="#/components/schemas/MerchantSetting")
      *         )
-     *     ),
-     *     @OA\Response(
-     *         response=422,
-     *         description="Validation error",
-     *         @OA\JsonContent(ref="#/components/schemas/ValidationErrorResponse")
      *     )
      * )
      */
     public function updateSettings(Request $request)
     {
         try {
-            $user = $request->user();
-            
-            if (!$user->hasRole('vendor')) {
-                return $this->error('Access denied. Vendor role required.', 403);
+            $user = Auth::user();
+            $merchant = Merchant::where('user_id', $user->id)->first();
+
+            if (!$merchant) {
+                return $this->notFound('Merchant profile not found');
             }
 
-            $request->validate([
-                'webhook_url' => 'sometimes|nullable|url|max:255',
-                'settings' => 'sometimes|array',
+            $validator = Validator::make($request->all(), [
+                'webhook_url' => 'nullable|url|max:255',
+                'callback_url' => 'nullable|url|max:255',
+                'return_url' => 'nullable|url|max:255',
+                'currency' => 'required|string|size:3',
+                'timezone' => 'required|string|max:50',
+                'language' => 'required|string|size:2',
+                'settings' => 'nullable|array',
             ]);
 
-            // In a real app, this would update the merchant_settings table
-            // For now, we'll just return success
+            if ($validator->fails()) {
+                return $this->validationError($validator->errors());
+            }
 
-            return $this->success([], 'Merchant settings updated successfully');
-        } catch (ValidationException $e) {
-            return $this->error('Validation failed', 422, $e->errors());
+            $settings = MerchantSetting::where('merchant_id', $merchant->id)->first();
+
+            if (!$settings) {
+                $settings = MerchantSetting::create([
+                    'merchant_id' => $merchant->id,
+                    'api_key' => 'merchant_' . uniqid(),
+                    'api_secret' => 'secret_' . bin2hex(random_bytes(16)),
+                    'is_active' => true,
+                ]);
+            }
+
+            $settings->update($request->only([
+                'webhook_url', 'callback_url', 'return_url',
+                'currency', 'timezone', 'language', 'settings'
+            ]));
+
+            return $this->success($settings, 'Merchant settings updated successfully');
+
         } catch (\Exception $e) {
-            return $this->error('Failed to update merchant settings', 500, $e->getMessage());
+            return $this->error('Failed to update merchant settings', $e->getMessage(), 500);
         }
     }
 
@@ -263,9 +362,9 @@ class MerchantController extends BaseApiController
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
-     *         required=true,
      *         description="Merchant ID",
-     *         @OA\Schema(type="integer", example=1)
+     *         required=true,
+     *         @OA\Schema(type="integer")
      *     ),
      *     @OA\Response(
      *         response=200,
@@ -273,7 +372,7 @@ class MerchantController extends BaseApiController
      *         @OA\JsonContent(
      *             @OA\Property(property="success", type="boolean", example=true),
      *             @OA\Property(property="message", type="string", example="Merchant retrieved successfully"),
-     *             @OA\Property(property="data", type="object", ref="#/components/schemas/User")
+     *             @OA\Property(property="data", type="object", ref="#/components/schemas/Merchant")
      *         )
      *     ),
      *     @OA\Response(
@@ -286,31 +385,48 @@ class MerchantController extends BaseApiController
     public function show($id)
     {
         try {
-            $merchant = User::role('vendor')->with('roles', 'permissions')->findOrFail($id);
-            
-            return $this->success($merchant, 'Merchant retrieved successfully');
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return $this->error('Merchant not found', 404);
+            $merchant = Merchant::with(['user', 'settings'])->find($id);
+
+            if (!$merchant) {
+                return $this->notFound('Merchant not found');
+            }
+
+            // Check if user can view this merchant
+            $user = Auth::user();
+            if (!$user->hasRole(['admin', 'superadmin']) && $merchant->user_id !== $user->id) {
+                return $this->forbidden('Access denied');
+            }
+
+            return $this->success(new MerchantResource($merchant), 'Merchant retrieved successfully');
+
         } catch (\Exception $e) {
-            return $this->error('Failed to retrieve merchant', 500, $e->getMessage());
+            return $this->error('Failed to retrieve merchant', $e->getMessage(), 500);
         }
     }
 
     /**
      * @OA\Post(
      *     path="/api/v1/merchants",
-     *     summary="Create a new merchant",
+     *     summary="Create new merchant",
      *     tags={"Merchants"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"name","email","password","username"},
-     *             @OA\Property(property="name", type="string", example="Merchant Name"),
-     *             @OA\Property(property="username", type="string", example="merchant"),
-     *             @OA\Property(property="email", type="string", format="email", example="merchant@example.com"),
+     *             required={"business_name","business_type","phone","email","address","city","state","country","postal_code"},
+     *             @OA\Property(property="business_name", type="string", example="Acme Corporation"),
+     *             @OA\Property(property="business_type", type="string", example="restaurant"),
+     *             @OA\Property(property="description", type="string", example="Fine dining restaurant"),
+     *             @OA\Property(property="website", type="string", example="https://acme.com"),
      *             @OA\Property(property="phone", type="string", example="+1234567890"),
-     *             @OA\Property(property="password", type="string", format="password", example="password"),
+     *             @OA\Property(property="email", type="string", format="email", example="contact@acme.com"),
+     *             @OA\Property(property="address", type="string", example="123 Main St, City, State 12345"),
+     *             @OA\Property(property="city", type="string", example="New York"),
+     *             @OA\Property(property="state", type="string", example="NY"),
+     *             @OA\Property(property="country", type="string", example="United States"),
+     *             @OA\Property(property="postal_code", type="string", example="10001"),
+     *             @OA\Property(property="latitude", type="number", format="float", example=40.7128),
+     *             @OA\Property(property="longitude", type="number", format="float", example=-74.0060)
      *         )
      *     ),
      *     @OA\Response(
@@ -319,7 +435,7 @@ class MerchantController extends BaseApiController
      *         @OA\JsonContent(
      *             @OA\Property(property="success", type="boolean", example=true),
      *             @OA\Property(property="message", type="string", example="Merchant created successfully"),
-     *             @OA\Property(property="data", type="object", ref="#/components/schemas/User")
+     *             @OA\Property(property="data", type="object", ref="#/components/schemas/Merchant")
      *         )
      *     ),
      *     @OA\Response(
@@ -332,54 +448,102 @@ class MerchantController extends BaseApiController
     public function store(Request $request)
     {
         try {
-            $request->validate([
-                'name' => 'required|string|max:255',
-                'username' => 'required|string|max:255|unique:users',
-                'email' => 'required|string|email|max:255|unique:users',
-                'phone' => 'nullable|string|max:255',
-                'password' => 'required|string|min:8',
+            $user = Auth::user();
+
+            // Check if user already has a merchant profile
+            $existingMerchant = Merchant::where('user_id', $user->id)->first();
+            if ($existingMerchant) {
+                return $this->error('User already has a merchant profile', null, 409);
+            }
+
+            $validator = Validator::make($request->all(), [
+                'business_name' => 'required|string|max:255',
+                'business_type' => 'required|string|max:100',
+                'description' => 'nullable|string|max:1000',
+                'website' => 'nullable|url|max:255',
+                'phone' => 'required|string|max:20',
+                'email' => 'required|email|max:255',
+                'address' => 'required|string|max:500',
+                'city' => 'required|string|max:100',
+                'state' => 'required|string|max:100',
+                'country' => 'required|string|max:100',
+                'postal_code' => 'required|string|max:20',
+                'latitude' => 'nullable|numeric|between:-90,90',
+                'longitude' => 'nullable|numeric|between:-180,180',
             ]);
 
-            $merchant = User::create([
-                'name' => $request->name,
-                'username' => $request->username,
-                'email' => $request->email,
+            if ($validator->fails()) {
+                return $this->validationError($validator->errors());
+            }
+
+            DB::beginTransaction();
+
+            $merchant = Merchant::create([
+                'user_id' => $user->id,
+                'business_name' => $request->business_name,
+                'business_type' => $request->business_type,
+                'description' => $request->description,
+                'website' => $request->website,
                 'phone' => $request->phone,
-                'password' => Hash::make($request->password),
-                'status' => 'active',
+                'email' => $request->email,
+                'address' => $request->address,
+                'city' => $request->city,
+                'state' => $request->state,
+                'country' => $request->country,
+                'postal_code' => $request->postal_code,
+                'latitude' => $request->latitude,
+                'longitude' => $request->longitude,
+                'status' => 'pending',
+                'is_verified' => false,
             ]);
 
-            $merchant->assignRole('vendor');
+            // Create default settings
+            MerchantSetting::create([
+                'merchant_id' => $merchant->id,
+                'api_key' => 'merchant_' . uniqid(),
+                'api_secret' => 'secret_' . bin2hex(random_bytes(16)),
+                'currency' => 'USD',
+                'timezone' => 'UTC',
+                'language' => 'en',
+                'settings' => [],
+                'is_active' => true,
+            ]);
 
-            return $this->success($merchant, 'Merchant created successfully', 201);
-        } catch (ValidationException $e) {
-            return $this->error('Validation failed', 422, $e->errors());
+            // Update user to be a vendor
+            $user->update(['is_vendor' => true]);
+            $user->assignRole('vendor');
+
+            DB::commit();
+
+            $merchant->load(['user', 'settings']);
+
+            return $this->created(new MerchantResource($merchant), 'Merchant created successfully');
+
         } catch (\Exception $e) {
-            return $this->error('Failed to create merchant', 500, $e->getMessage());
+            DB::rollBack();
+            return $this->error('Failed to create merchant', $e->getMessage(), 500);
         }
     }
 
     /**
      * @OA\Put(
      *     path="/api/v1/merchants/{id}",
-     *     summary="Update merchant by ID",
+     *     summary="Update merchant",
      *     tags={"Merchants"},
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
-     *         required=true,
      *         description="Merchant ID",
-     *         @OA\Schema(type="integer", example=1)
+     *         required=true,
+     *         @OA\Schema(type="integer")
      *     ),
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             @OA\Property(property="name", type="string", example="Merchant Name"),
-     *             @OA\Property(property="username", type="string", example="merchant"),
-     *             @OA\Property(property="email", type="string", format="email", example="merchant@example.com"),
-     *             @OA\Property(property="phone", type="string", example="+1234567890"),
-     *             @OA\Property(property="status", type="string", enum={"active", "inactive", "suspended"}, example="active"),
+     *             @OA\Property(property="business_name", type="string", example="Updated Business Name"),
+     *             @OA\Property(property="status", type="string", enum={"active", "inactive", "suspended", "pending"}),
+     *             @OA\Property(property="is_verified", type="boolean", example=true)
      *         )
      *     ),
      *     @OA\Response(
@@ -388,52 +552,79 @@ class MerchantController extends BaseApiController
      *         @OA\JsonContent(
      *             @OA\Property(property="success", type="boolean", example=true),
      *             @OA\Property(property="message", type="string", example="Merchant updated successfully"),
-     *             @OA\Property(property="data", type="object", ref="#/components/schemas/User")
+     *             @OA\Property(property="data", type="object", ref="#/components/schemas/Merchant")
      *         )
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Merchant not found",
-     *         @OA\JsonContent(ref="#/components/schemas/NotFoundResponse")
      *     )
      * )
      */
     public function update(Request $request, $id)
     {
         try {
-            $request->validate([
-                'name' => 'sometimes|string|max:255',
-                'username' => 'sometimes|string|max:255|unique:users,username,' . $id,
-                'email' => 'sometimes|string|email|max:255|unique:users,email,' . $id,
-                'phone' => 'sometimes|nullable|string|max:255',
-                'status' => 'sometimes|in:active,inactive,suspended',
+            $merchant = Merchant::find($id);
+
+            if (!$merchant) {
+                return $this->notFound('Merchant not found');
+            }
+
+            // Check permissions
+            $user = Auth::user();
+            if (!$user->hasRole(['admin', 'superadmin']) && $merchant->user_id !== $user->id) {
+                return $this->forbidden('Access denied');
+            }
+
+            $validator = Validator::make($request->all(), [
+                'business_name' => 'sometimes|string|max:255',
+                'business_type' => 'sometimes|string|max:100',
+                'description' => 'nullable|string|max:1000',
+                'website' => 'nullable|url|max:255',
+                'phone' => 'sometimes|string|max:20',
+                'email' => 'sometimes|email|max:255',
+                'address' => 'sometimes|string|max:500',
+                'city' => 'sometimes|string|max:100',
+                'state' => 'sometimes|string|max:100',
+                'country' => 'sometimes|string|max:100',
+                'postal_code' => 'sometimes|string|max:20',
+                'latitude' => 'nullable|numeric|between:-90,90',
+                'longitude' => 'nullable|numeric|between:-180,180',
+                'status' => 'sometimes|in:active,inactive,suspended,pending',
+                'is_verified' => 'sometimes|boolean',
             ]);
 
-            $merchant = User::role('vendor')->findOrFail($id);
-            $merchant->update($request->only(['name', 'username', 'email', 'phone', 'status']));
+            if ($validator->fails()) {
+                return $this->validationError($validator->errors());
+            }
 
-            return $this->success($merchant->fresh(), 'Merchant updated successfully');
-        } catch (ValidationException $e) {
-            return $this->error('Validation failed', 422, $e->errors());
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return $this->error('Merchant not found', 404);
+            $merchant->update($request->only([
+                'business_name', 'business_type', 'description', 'website',
+                'phone', 'email', 'address', 'city', 'state', 'country',
+                'postal_code', 'latitude', 'longitude', 'status', 'is_verified'
+            ]));
+
+            if ($request->has('is_verified') && $request->is_verified) {
+                $merchant->update(['verification_date' => now()]);
+            }
+
+            $merchant->load(['user', 'settings']);
+
+            return $this->success(new MerchantResource($merchant), 'Merchant updated successfully');
+
         } catch (\Exception $e) {
-            return $this->error('Failed to update merchant', 500, $e->getMessage());
+            return $this->error('Failed to update merchant', $e->getMessage(), 500);
         }
     }
 
     /**
      * @OA\Delete(
      *     path="/api/v1/merchants/{id}",
-     *     summary="Delete merchant by ID",
+     *     summary="Delete merchant",
      *     tags={"Merchants"},
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
-     *         required=true,
      *         description="Merchant ID",
-     *         @OA\Schema(type="integer", example=1)
+     *         required=true,
+     *         @OA\Schema(type="integer")
      *     ),
      *     @OA\Response(
      *         response=200,
@@ -453,14 +644,37 @@ class MerchantController extends BaseApiController
     public function destroy($id)
     {
         try {
-            $merchant = User::role('vendor')->findOrFail($id);
+            $merchant = Merchant::find($id);
+
+            if (!$merchant) {
+                return $this->notFound('Merchant not found');
+            }
+
+            // Check permissions - only superadmin can delete merchants
+            $user = Auth::user();
+            if (!$user->hasRole('superadmin')) {
+                return $this->forbidden('Access denied. Only superadmin can delete merchants.');
+            }
+
+            DB::beginTransaction();
+
+            // Delete related settings
+            MerchantSetting::where('merchant_id', $merchant->id)->delete();
+
+            // Update user to remove vendor status
+            $merchant->user->update(['is_vendor' => false]);
+            $merchant->user->removeRole('vendor');
+
+            // Delete merchant
             $merchant->delete();
 
+            DB::commit();
+
             return $this->success([], 'Merchant deleted successfully');
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return $this->error('Merchant not found', 404);
+
         } catch (\Exception $e) {
-            return $this->error('Failed to delete merchant', 500, $e->getMessage());
+            DB::rollBack();
+            return $this->error('Failed to delete merchant', $e->getMessage(), 500);
         }
     }
 }
