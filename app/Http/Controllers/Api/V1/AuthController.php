@@ -166,10 +166,10 @@ class AuthController extends BaseApiController
         $field = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
 
         // Attempt authentication with the determined field
-        if (!Auth::attempt([$field => $login, 'password' => $password])) {
+        if (!Auth::guard('web')->attempt([$field => $login, 'password' => $password])) {
             // Track failed login attempt
             LoginHistoryService::trackFailedLogin($login, $request, 'invalid_credentials');
-            return $this->error('Invalid credentials', 401);
+            return $this->error('Invalid credentials', null, 401);
         }
 
         $user = Auth::user();

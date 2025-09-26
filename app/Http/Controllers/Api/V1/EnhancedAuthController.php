@@ -155,25 +155,26 @@ class EnhancedAuthController extends BaseApiController
                 ], 423);
             }
 
-            // Attempt authentication based on guard type
+            // Attempt authentication using standard web guard first
             $authenticated = false;
             
-            if (str_starts_with($guard, 'api_')) {
-                // For API guards, use standard web guard for authentication
-                if (Auth::guard('web')->attempt([$field => $login, 'password' => $password])) {
-                    $authenticated = true;
-                    $user = Auth::guard('web')->user();
-                }
-            } else {
-                // For session guards, use the specific guard
-                if (Auth::guard($guard)->attempt([$field => $login, 'password' => $password])) {
-                    $authenticated = true;
-                    $user = Auth::guard($guard)->user();
+            // Use the standard web guard for authentication since all users are in the same table
+            if (Auth::guard('web')->attempt([$field => $login, 'password' => $password])) {
+                $authenticated = true;
+                $user = Auth::guard('web')->user();
+                
+                // Verify the user meets the guard requirements
+                if (!$this->userMeetsGuardRequirements($user, $guard)) {
+                    Auth::guard('web')->logout();
+                    $authenticated = false;
                 }
             }
 
             if (!$authenticated) {
-                GuardService::recordFailedLogin($user, $guard);
+                // Only record failed login if user exists
+                if ($user) {
+                    GuardService::recordFailedLogin($user, $guard);
+                }
                 RateLimiter::hit($rateLimitKey, 300);
                 return $this->error('Invalid credentials', null, 401);
             }
@@ -220,6 +221,31 @@ class EnhancedAuthController extends BaseApiController
         } catch (\Exception $e) {
             RateLimiter::hit($rateLimitKey, 300);
             return $this->error('Login failed', $e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Check if user meets the requirements for the specified guard
+     */
+    private function userMeetsGuardRequirements(User $user, string $guard): bool
+    {
+        switch ($guard) {
+            case 'superadmin':
+            case 'api_superadmin':
+                return $user->hasRole('superadmin') && $user->is_admin && $user->is_active;
+                
+            case 'admin':
+            case 'api_admin':
+                return $user->hasRole(['admin', 'superadmin']) && $user->is_admin && $user->is_active;
+                
+            case 'vendor':
+            case 'api_vendor':
+                return $user->hasRole('vendor') && $user->is_vendor && $user->is_active;
+                
+            case 'web':
+            case 'api':
+            default:
+                return $user->is_active;
         }
     }
 

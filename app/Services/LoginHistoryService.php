@@ -33,21 +33,15 @@ class LoginHistoryService
             'login_at' => now(),
         ]);
 
-        // Log to audit trail
-        self::logAuditTrail(
-            $user,
-            $isSuccessful ? 'login_success' : 'login_failed',
-            'User',
-            $user->id,
-            $request,
-            null,
-            [
-                'login_method' => self::determineLoginMethod($request),
-                'device_info' => $deviceInfo,
-                'failure_reason' => $failureReason,
-            ],
-            $isSuccessful ? 'success' : 'failed'
-        );
+        // Log to audit trail (simplified for now)
+        Log::info($isSuccessful ? 'User login successful' : 'User login failed', [
+            'user_id' => $user->id,
+            'user_name' => $user->name,
+            'login_method' => self::determineLoginMethod($request),
+            'device_info' => $deviceInfo,
+            'failure_reason' => $failureReason,
+            'ip_address' => $request->ip(),
+        ]);
 
         return $loginHistory;
     }
@@ -71,19 +65,13 @@ class LoginHistoryService
             $loginHistory->calculateSessionDuration();
         }
 
-        // Log to audit trail
-        self::logAuditTrail(
-            $user,
-            'logout',
-            'User',
-            $user->id,
-            $request,
-            null,
-            [
-                'session_duration_minutes' => $loginHistory?->session_duration_minutes,
-            ],
-            'success'
-        );
+        // Log to audit trail (simplified for now)
+        Log::info('User logout', [
+            'user_id' => $user->id,
+            'user_name' => $user->name,
+            'session_duration_minutes' => $loginHistory?->session_duration_minutes,
+            'ip_address' => $request->ip(),
+        ]);
     }
 
     /**
@@ -99,20 +87,13 @@ class LoginHistoryService
         if ($user) {
             self::trackLogin($user, $request, false, $reason);
         } else {
-            // Log failed attempt for non-existent user
-            self::logAuditTrail(
-                null,
-                'login_failed',
-                'User',
-                null,
-                $request,
-                null,
-                [
-                    'login_attempt' => $login,
-                    'failure_reason' => 'user_not_found',
-                ],
-                'failed'
-            );
+            // Log failed attempt for non-existent user (simplified for now)
+            Log::warning('Failed login attempt for non-existent user', [
+                'login_attempt' => $login,
+                'failure_reason' => 'user_not_found',
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]);
         }
     }
 

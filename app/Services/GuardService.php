@@ -51,19 +51,19 @@ class GuardService
         switch ($guard) {
             case 'superadmin':
             case 'api_superadmin':
-                return $user->hasRole('superadmin');
+                return $user->hasRole('superadmin') && $user->is_admin && $user->is_active;
             
             case 'admin':
             case 'api_admin':
-                return $user->hasRole(['admin', 'superadmin']);
+                return $user->hasRole(['admin', 'superadmin']) && $user->is_admin && $user->is_active;
             
             case 'vendor':
             case 'api_vendor':
-                return $user->isVendor();
+                return $user->hasRole('vendor') && $user->is_vendor && $user->is_active;
             
             case 'web':
             case 'api':
-                return true; // All users can use web/api guards
+                return $user->is_active; // All active users can use web/api guards
             
             default:
                 return false;
