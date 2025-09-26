@@ -11,6 +11,7 @@ class Booking extends Model
     use HasFactory;
 
     protected $fillable = [
+        'external_booking_id',
         'booking_number',
         'user_id',
         'merchant_id',
@@ -23,6 +24,7 @@ class Booking extends Model
         'tax_amount',
         'discount_amount',
         'final_amount',
+        'currency',
         'booking_date',
         'booking_time',
         'booking_datetime',
@@ -48,6 +50,9 @@ class Booking extends Model
         'dietary_restrictions',
         'accessibility_requirements',
         'custom_fields',
+        'external_data',
+        'payment_data',
+        'success_processed_at',
         'fulfillment_type',
         'delivery_address',
         'delivery_contact_name',
@@ -98,6 +103,8 @@ class Booking extends Model
 
     protected $casts = [
         'custom_fields' => 'array',
+        'external_data' => 'array',
+        'payment_data' => 'array',
         'payment_details' => 'array',
         'notification_history' => 'array',
         'tracking_data' => 'array',
@@ -115,6 +122,7 @@ class Booking extends Model
         'staff_assigned_at' => 'datetime',
         'reviewed_at' => 'datetime',
         'last_notification_sent' => 'datetime',
+        'success_processed_at' => 'datetime',
         'customer_notified' => 'boolean',
         'merchant_notified' => 'boolean',
         'staff_notified' => 'boolean',

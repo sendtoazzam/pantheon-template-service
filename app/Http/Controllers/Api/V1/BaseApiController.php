@@ -289,6 +289,93 @@ use App\Http\Traits\ApiResponseTrait;
  *     @OA\Property(property="created_at", type="string", format="date-time", description="Creation timestamp", example="2025-09-26T07:30:00Z"),
  *     @OA\Property(property="updated_at", type="string", format="date-time", description="Last update timestamp", example="2025-09-26T07:30:00Z")
  * )
+ *
+ * @OA\Schema(
+ *     schema="ValidationErrorResponse",
+ *     title="Validation Error Response",
+ *     description="Response for validation errors",
+ *     @OA\Property(property="success", type="boolean", example=false),
+ *     @OA\Property(property="message", type="string", example="Validation failed"),
+ *     @OA\Property(property="errors", type="object", description="Validation error details")
+ * )
+ *
+ * @OA\Schema(
+ *     schema="UnauthorizedResponse",
+ *     title="Unauthorized Response",
+ *     description="Response for unauthorized access",
+ *     @OA\Property(property="success", type="boolean", example=false),
+ *     @OA\Property(property="message", type="string", example="Unauthenticated")
+ * )
+ *
+ * @OA\Schema(
+ *     schema="ForbiddenResponse",
+ *     title="Forbidden Response",
+ *     description="Response for forbidden access",
+ *     @OA\Property(property="success", type="boolean", example=false),
+ *     @OA\Property(property="message", type="string", example="Access denied")
+ * )
+ *
+ * @OA\Schema(
+ *     schema="NotFoundResponse",
+ *     title="Not Found Response",
+ *     description="Response for resource not found",
+ *     @OA\Property(property="success", type="boolean", example=false),
+ *     @OA\Property(property="message", type="string", example="Resource not found")
+ * )
+ *
+ * @OA\Schema(
+ *     schema="LockedResponse",
+ *     title="Locked Response",
+ *     description="Response for locked account",
+ *     @OA\Property(property="success", type="boolean", example=false),
+ *     @OA\Property(property="message", type="string", example="Account is temporarily locked"),
+ *     @OA\Property(property="data", type="object",
+ *         @OA\Property(property="locked_until", type="string", format="date-time", example="2025-09-26T10:30:00Z")
+ *     )
+ * )
+ *
+ * @OA\Schema(
+ *     schema="RateLimitResponse",
+ *     title="Rate Limit Response",
+ *     description="Response for rate limit exceeded",
+ *     @OA\Property(property="success", type="boolean", example=false),
+ *     @OA\Property(property="message", type="string", example="Too many requests"),
+ *     @OA\Property(property="data", type="object",
+ *         @OA\Property(property="retry_after", type="integer", example=60)
+ *     )
+ * )
+ *
+ * @OA\Schema(
+ *     schema="Role",
+ *     title="Role",
+ *     description="Role model",
+ *     @OA\Property(property="id", type="integer", format="int64", description="Role ID", example=1),
+ *     @OA\Property(property="name", type="string", description="Role name", example="admin"),
+ *     @OA\Property(property="display_name", type="string", description="Role display name", example="Administrator"),
+ *     @OA\Property(property="description", type="string", nullable=true, description="Role description", example="Full system administrator"),
+ *     @OA\Property(property="guard_name", type="string", description="Guard name", example="web"),
+ *     @OA\Property(property="permissions", type="array", @OA\Items(ref="#/components/schemas/Permission"), description="Role permissions"),
+ *     @OA\Property(property="users_count", type="integer", nullable=true, description="Number of users with this role", example=5),
+ *     @OA\Property(property="permissions_count", type="integer", nullable=true, description="Number of permissions for this role", example=15),
+ *     @OA\Property(property="created_at", type="string", format="date-time", description="Creation timestamp", example="2025-09-26T07:30:00Z"),
+ *     @OA\Property(property="updated_at", type="string", format="date-time", description="Last update timestamp", example="2025-09-26T07:30:00Z")
+ * )
+ *
+ * @OA\Schema(
+ *     schema="Permission",
+ *     title="Permission",
+ *     description="Permission model",
+ *     @OA\Property(property="id", type="integer", format="int64", description="Permission ID", example=1),
+ *     @OA\Property(property="name", type="string", description="Permission name", example="view users"),
+ *     @OA\Property(property="display_name", type="string", description="Permission display name", example="View Users"),
+ *     @OA\Property(property="description", type="string", nullable=true, description="Permission description", example="Can view user information"),
+ *     @OA\Property(property="category", type="string", nullable=true, description="Permission category", example="user_management"),
+ *     @OA\Property(property="guard_name", type="string", description="Guard name", example="web"),
+ *     @OA\Property(property="roles", type="array", @OA\Items(ref="#/components/schemas/Role"), description="Roles that have this permission"),
+ *     @OA\Property(property="roles_count", type="integer", nullable=true, description="Number of roles with this permission", example=3),
+ *     @OA\Property(property="created_at", type="string", format="date-time", description="Creation timestamp", example="2025-09-26T07:30:00Z"),
+ *     @OA\Property(property="updated_at", type="string", format="date-time", description="Last update timestamp", example="2025-09-26T07:30:00Z")
+ * )
  */
 class BaseApiController extends Controller
 {

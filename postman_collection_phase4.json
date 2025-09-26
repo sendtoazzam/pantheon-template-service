@@ -1,0 +1,873 @@
+{
+  "info": {
+    "name": "Pantheon Template Service - Phase 4 Enhanced Security",
+    "description": "Phase 4 API collection featuring enhanced authentication, 2FA support, email verification, password management, advanced user management, comprehensive role and permission management, and enhanced security features.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{auth_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000",
+      "type": "string"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Enhanced Authentication & Security",
+      "item": [
+        {
+          "name": "Get Available Guards",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/guards",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "guards"]
+            }
+          }
+        },
+        {
+          "name": "Login with Guard",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"login\": \"superadmin@pantheon.com\",\n  \"password\": \"password\",\n  \"remember_me\": false,\n  \"two_factor_code\": \"123456\",\n  \"device_name\": \"iPhone 15 Pro\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/login/api_superadmin",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "login", "api_superadmin"]
+            }
+          }
+        },
+        {
+          "name": "Switch Guard",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"guard\": \"api_admin\",\n  \"two_factor_code\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/switch-guard",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "switch-guard"]
+            }
+          }
+        },
+        {
+          "name": "Get Guard Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/guard-statistics",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "guard-statistics"]
+            }
+          }
+        },
+        {
+          "name": "Send Email Verification",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/send-verification",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "send-verification"]
+            }
+          }
+        },
+        {
+          "name": "Verify Email",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"verification_token_123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/verify-email",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "verify-email"]
+            }
+          }
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/forgot-password",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "forgot-password"]
+            }
+          }
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"reset_token_123\",\n  \"email\": \"user@example.com\",\n  \"password\": \"newpassword123\",\n  \"password_confirmation\": \"newpassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/reset-password",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "reset-password"]
+            }
+          }
+        },
+        {
+          "name": "Setup 2FA",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/setup-2fa",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "setup-2fa"]
+            }
+          }
+        },
+        {
+          "name": "Verify 2FA",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/verify-2fa",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "verify-2fa"]
+            }
+          }
+        },
+        {
+          "name": "Disable 2FA",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"123456\",\n  \"password\": \"currentpassword\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/disable-2fa",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "disable-2fa"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Advanced User Management",
+      "item": [
+        {
+          "name": "Get All Users (Advanced)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/users?search=john&role=admin&status=active&is_admin=true&sort_by=created_at&sort_direction=desc&page=1&per_page=15",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "users"],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "john",
+                  "description": "Search term for name, email, username"
+                },
+                {
+                  "key": "role",
+                  "value": "admin",
+                  "description": "Filter by role"
+                },
+                {
+                  "key": "status",
+                  "value": "active",
+                  "description": "Filter by status"
+                },
+                {
+                  "key": "is_admin",
+                  "value": "true",
+                  "description": "Filter by admin status"
+                },
+                {
+                  "key": "sort_by",
+                  "value": "created_at",
+                  "description": "Sort field"
+                },
+                {
+                  "key": "sort_direction",
+                  "value": "desc",
+                  "description": "Sort direction"
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number"
+                },
+                {
+                  "key": "per_page",
+                  "value": "15",
+                  "description": "Items per page"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get User Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/users/statistics",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "users", "statistics"]
+            }
+          }
+        },
+        {
+          "name": "Bulk Update Users",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_ids\": [1, 2, 3],\n  \"updates\": {\n    \"status\": \"active\",\n    \"role\": \"user\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/users/bulk-update",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "users", "bulk-update"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Role Management",
+      "item": [
+        {
+          "name": "Get All Roles",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/roles?search=admin&with_permissions=true&with_users=true&page=1&per_page=15",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "roles"],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "admin",
+                  "description": "Search term for role name"
+                },
+                {
+                  "key": "with_permissions",
+                  "value": "true",
+                  "description": "Include permissions in response"
+                },
+                {
+                  "key": "with_users",
+                  "value": "true",
+                  "description": "Include user count in response"
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number"
+                },
+                {
+                  "key": "per_page",
+                  "value": "15",
+                  "description": "Items per page"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Role Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/roles/statistics",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "roles", "statistics"]
+            }
+          }
+        },
+        {
+          "name": "Create Role",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"content_manager\",\n  \"display_name\": \"Content Manager\",\n  \"description\": \"Manages content and media\",\n  \"permissions\": [\"view content\", \"create content\", \"edit content\"],\n  \"guard_name\": \"web\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/roles",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "roles"]
+            }
+          }
+        },
+        {
+          "name": "Update Role",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"display_name\": \"Content Manager\",\n  \"description\": \"Manages content and media\",\n  \"permissions\": [\"view content\", \"create content\", \"edit content\", \"delete content\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/roles/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "roles", "1"]
+            }
+          }
+        },
+        {
+          "name": "Assign Permissions to Role",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"permissions\": [\"view users\", \"create users\"],\n  \"sync\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/roles/1/assign-permissions",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "roles", "1", "assign-permissions"]
+            }
+          }
+        },
+        {
+          "name": "Revoke Permissions from Role",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"permissions\": [\"delete users\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/roles/1/revoke-permissions",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "roles", "1", "revoke-permissions"]
+            }
+          }
+        },
+        {
+          "name": "Delete Role",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/roles/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "roles", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Permission Management",
+      "item": [
+        {
+          "name": "Get All Permissions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/permissions?search=user&category=user_management&with_roles=true&page=1&per_page=15",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "permissions"],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "user",
+                  "description": "Search term for permission name"
+                },
+                {
+                  "key": "category",
+                  "value": "user_management",
+                  "description": "Filter by permission category"
+                },
+                {
+                  "key": "with_roles",
+                  "value": "true",
+                  "description": "Include roles that have this permission"
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number"
+                },
+                {
+                  "key": "per_page",
+                  "value": "15",
+                  "description": "Items per page"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Permission Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/permissions/statistics",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "permissions", "statistics"]
+            }
+          }
+        },
+        {
+          "name": "Create Permission",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"manage content\",\n  \"display_name\": \"Manage Content\",\n  \"description\": \"Can create, edit, and delete content\",\n  \"category\": \"content\",\n  \"guard_name\": \"web\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/permissions",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "permissions"]
+            }
+          }
+        },
+        {
+          "name": "Update Permission",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"display_name\": \"Manage Content\",\n  \"description\": \"Can create, edit, and delete content\",\n  \"category\": \"content\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/permissions/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "permissions", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get User Permissions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/permissions/user/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "permissions", "user", "1"]
+            }
+          }
+        },
+        {
+          "name": "Assign Permissions to User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"permissions\": [\"view users\", \"create users\"],\n  \"sync\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/permissions/user/1/assign",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "permissions", "user", "1", "assign"]
+            }
+          }
+        },
+        {
+          "name": "Revoke Permissions from User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"permissions\": [\"delete users\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/permissions/user/1/revoke",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "permissions", "user", "1", "revoke"]
+            }
+          }
+        },
+        {
+          "name": "Delete Permission",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/permissions/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "permissions", "1"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

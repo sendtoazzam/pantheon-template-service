@@ -35,4 +35,11 @@ return [
         ],
     ],
 
+    'warehouse' => [
+        'base_url' => env('WAREHOUSE_API_URL', 'https://warehouse-api.example.com'),
+        'timeout' => env('WAREHOUSE_API_TIMEOUT', 30),
+        'retry_attempts' => env('WAREHOUSE_API_RETRY_ATTEMPTS', 3),
+        'retry_delay' => env('WAREHOUSE_API_RETRY_DELAY', 1000), // milliseconds
+    ],
+
 ];

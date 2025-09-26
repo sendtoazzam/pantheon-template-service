@@ -46,10 +46,28 @@ Route::prefix('v1')->group(function () {
         // Enhanced authentication routes
         Route::post('/login/{guard}', [App\Http\Controllers\Api\V1\EnhancedAuthController::class, 'loginWithGuard']);
         
+        // Email verification routes
+        Route::post('/send-verification', [App\Http\Controllers\Api\V1\EnhancedAuthController::class, 'sendVerification']);
+        Route::post('/verify-email', [App\Http\Controllers\Api\V1\EnhancedAuthController::class, 'verifyEmail']);
+        
+        // Password reset routes
+        Route::post('/forgot-password', [App\Http\Controllers\Api\V1\EnhancedAuthController::class, 'forgotPassword']);
+        Route::post('/reset-password', [App\Http\Controllers\Api\V1\EnhancedAuthController::class, 'resetPassword']);
+        
         Route::middleware('auth:sanctum')->group(function () {
             Route::post('/logout', [App\Http\Controllers\Api\V1\AuthController::class, 'logout']);
             Route::get('/me', [App\Http\Controllers\Api\V1\AuthController::class, 'me']);
             Route::post('/refresh', [App\Http\Controllers\Api\V1\AuthController::class, 'refresh']);
+            
+            // Enhanced authentication routes
+            Route::get('/guards', [App\Http\Controllers\Api\V1\EnhancedAuthController::class, 'getAvailableGuards']);
+            Route::post('/switch-guard', [App\Http\Controllers\Api\V1\EnhancedAuthController::class, 'switchGuard']);
+            Route::get('/guard-statistics', [App\Http\Controllers\Api\V1\EnhancedAuthController::class, 'getGuardStatistics']);
+            
+            // 2FA routes
+            Route::post('/setup-2fa', [App\Http\Controllers\Api\V1\EnhancedAuthController::class, 'setup2FA']);
+            Route::post('/verify-2fa', [App\Http\Controllers\Api\V1\EnhancedAuthController::class, 'verify2FA']);
+            Route::post('/disable-2fa', [App\Http\Controllers\Api\V1\EnhancedAuthController::class, 'disable2FA']);
             Route::get('/login-history', [App\Http\Controllers\Api\V1\LoginHistoryController::class, 'index']);
             Route::get('/login-statistics', [App\Http\Controllers\Api\V1\LoginHistoryController::class, 'statistics']);
             
@@ -63,16 +81,43 @@ Route::prefix('v1')->group(function () {
     // Protected routes (require authentication)
     Route::middleware('auth:sanctum')->group(function () {
         
-        // User routes
-        Route::prefix('users')->group(function () {
-            Route::get('/', [App\Http\Controllers\Api\V1\UserController::class, 'index']);
-            Route::get('/profile', [App\Http\Controllers\Api\V1\UserController::class, 'profile']);
-            Route::put('/profile', [App\Http\Controllers\Api\V1\UserController::class, 'updateProfile']);
-            Route::get('/{id}', [App\Http\Controllers\Api\V1\UserController::class, 'show']);
-            Route::post('/', [App\Http\Controllers\Api\V1\UserController::class, 'store']);
-            Route::put('/{id}', [App\Http\Controllers\Api\V1\UserController::class, 'update']);
-            Route::delete('/{id}', [App\Http\Controllers\Api\V1\UserController::class, 'destroy']);
-        });
+            // User routes
+            Route::prefix('users')->group(function () {
+                Route::get('/', [App\Http\Controllers\Api\V1\UserController::class, 'index']);
+                Route::get('/profile', [App\Http\Controllers\Api\V1\UserController::class, 'profile']);
+                Route::put('/profile', [App\Http\Controllers\Api\V1\UserController::class, 'updateProfile']);
+                Route::get('/statistics', [App\Http\Controllers\Api\V1\UserController::class, 'statistics']);
+                Route::post('/bulk-update', [App\Http\Controllers\Api\V1\UserController::class, 'bulkUpdate']);
+                Route::get('/{id}', [App\Http\Controllers\Api\V1\UserController::class, 'show']);
+                Route::post('/', [App\Http\Controllers\Api\V1\UserController::class, 'store']);
+                Route::put('/{id}', [App\Http\Controllers\Api\V1\UserController::class, 'update']);
+                Route::delete('/{id}', [App\Http\Controllers\Api\V1\UserController::class, 'destroy']);
+            });
+
+            // Role routes
+            Route::prefix('roles')->group(function () {
+                Route::get('/', [App\Http\Controllers\Api\V1\RoleController::class, 'index']);
+                Route::get('/statistics', [App\Http\Controllers\Api\V1\RoleController::class, 'statistics']);
+                Route::get('/{id}', [App\Http\Controllers\Api\V1\RoleController::class, 'show']);
+                Route::post('/', [App\Http\Controllers\Api\V1\RoleController::class, 'store']);
+                Route::put('/{id}', [App\Http\Controllers\Api\V1\RoleController::class, 'update']);
+                Route::delete('/{id}', [App\Http\Controllers\Api\V1\RoleController::class, 'destroy']);
+                Route::post('/{id}/assign-permissions', [App\Http\Controllers\Api\V1\RoleController::class, 'assignPermissions']);
+                Route::post('/{id}/revoke-permissions', [App\Http\Controllers\Api\V1\RoleController::class, 'revokePermissions']);
+            });
+
+            // Permission routes
+            Route::prefix('permissions')->group(function () {
+                Route::get('/', [App\Http\Controllers\Api\V1\PermissionController::class, 'index']);
+                Route::get('/statistics', [App\Http\Controllers\Api\V1\PermissionController::class, 'statistics']);
+                Route::get('/user/{userId}', [App\Http\Controllers\Api\V1\PermissionController::class, 'getUserPermissions']);
+                Route::post('/user/{userId}/assign', [App\Http\Controllers\Api\V1\PermissionController::class, 'assignToUser']);
+                Route::post('/user/{userId}/revoke', [App\Http\Controllers\Api\V1\PermissionController::class, 'revokeFromUser']);
+                Route::get('/{id}', [App\Http\Controllers\Api\V1\PermissionController::class, 'show']);
+                Route::post('/', [App\Http\Controllers\Api\V1\PermissionController::class, 'store']);
+                Route::put('/{id}', [App\Http\Controllers\Api\V1\PermissionController::class, 'update']);
+                Route::delete('/{id}', [App\Http\Controllers\Api\V1\PermissionController::class, 'destroy']);
+            });
 
         // Merchant routes
         Route::prefix('merchants')->group(function () {
@@ -141,6 +186,26 @@ Route::prefix('v1')->group(function () {
             Route::post('/', [App\Http\Controllers\Api\V1\UserActivityController::class, 'store']);
         });
 
+        // External API Integration routes
+        Route::prefix('external')->group(function () {
+            Route::get('/products', [App\Http\Controllers\Api\V1\ExternalApiController::class, 'getProducts']);
+            Route::get('/packages', [App\Http\Controllers\Api\V1\ExternalApiController::class, 'getPackages']);
+            Route::get('/insurance', [App\Http\Controllers\Api\V1\ExternalApiController::class, 'getInsurance']);
+            Route::get('/resources', [App\Http\Controllers\Api\V1\ExternalApiController::class, 'getResources']);
+            Route::get('/marketing', [App\Http\Controllers\Api\V1\ExternalApiController::class, 'getMarketing']);
+            Route::get('/promotions', [App\Http\Controllers\Api\V1\ExternalApiController::class, 'getPromotions']);
+            Route::get('/aggregated', [App\Http\Controllers\Api\V1\ExternalApiController::class, 'getAggregatedData']);
+            Route::get('/dashboard', [App\Http\Controllers\Api\V1\ExternalApiController::class, 'getDashboardData']);
+            Route::post('/booking/redirect', [App\Http\Controllers\Api\V1\ExternalApiController::class, 'redirectToBooking']);
+        });
+
+        // Webhook routes (public, no auth required)
+        Route::prefix('webhooks')->group(function () {
+            Route::post('/booking/callback', [App\Http\Controllers\Api\V1\WebhookController::class, 'handleBookingCallback']);
+            Route::post('/payment/callback', [App\Http\Controllers\Api\V1\WebhookController::class, 'handlePaymentCallback']);
+            Route::get('/status', [App\Http\Controllers\Api\V1\WebhookController::class, 'getWebhookStatus']);
+        });
+
         // Profile routes (permission-based access)
         Route::prefix('profile')->group(function () {
             Route::get('/', [App\Http\Controllers\Api\V1\ProfileController::class, 'show'])->middleware('permission_access:view own profile');
@@ -173,14 +238,23 @@ Route::prefix('v1')->group(function () {
                 Route::get('/users/{userId}/permissions', [App\Http\Controllers\Api\V1\PermissionController::class, 'getUserPermissions']);
             });
             
-            // User Management (Superadmin only)
-            Route::middleware('role:superadmin')->group(function () {
-                Route::get('/users', [App\Http\Controllers\Api\V1\UserManagementController::class, 'index']);
-                Route::post('/users', [App\Http\Controllers\Api\V1\UserManagementController::class, 'store']);
-                Route::get('/users/{id}', [App\Http\Controllers\Api\V1\UserManagementController::class, 'show']);
-                Route::put('/users/{id}', [App\Http\Controllers\Api\V1\UserManagementController::class, 'update']);
-                Route::delete('/users/{id}', [App\Http\Controllers\Api\V1\UserManagementController::class, 'destroy']);
-            });
+                // User Management (Superadmin only)
+                Route::middleware('role:superadmin')->group(function () {
+                    Route::get('/users', [App\Http\Controllers\Api\V1\UserManagementController::class, 'index']);
+                    Route::post('/users', [App\Http\Controllers\Api\V1\UserManagementController::class, 'store']);
+                    Route::get('/users/{id}', [App\Http\Controllers\Api\V1\UserManagementController::class, 'show']);
+                    Route::put('/users/{id}', [App\Http\Controllers\Api\V1\UserManagementController::class, 'update']);
+                    Route::delete('/users/{id}', [App\Http\Controllers\Api\V1\UserManagementController::class, 'destroy']);
+                });
+                
+                // Module Access Management (Superadmin only)
+                Route::middleware('role:superadmin')->group(function () {
+                    Route::get('/modules', [App\Http\Controllers\Api\V1\ModuleAccessController::class, 'getModules']);
+                    Route::get('/users/{userId}/module-access', [App\Http\Controllers\Api\V1\ModuleAccessController::class, 'getUserModuleAccess']);
+                    Route::post('/users/{userId}/grant-module-access', [App\Http\Controllers\Api\V1\ModuleAccessController::class, 'grantModuleAccess']);
+                    Route::post('/users/{userId}/revoke-module-access', [App\Http\Controllers\Api\V1\ModuleAccessController::class, 'revokeModuleAccess']);
+                    Route::post('/users/{userId}/bulk-module-access', [App\Http\Controllers\Api\V1\ModuleAccessController::class, 'bulkModuleAccess']);
+                });
             
             // API Logs Management (Superadmin only)
             Route::middleware('role:superadmin')->group(function () {

@@ -1,9 +1,9 @@
 {
   "info": {
     "name": "Pantheon Template Service - V1 API",
-    "description": "Complete API collection for Pantheon Template Service with authentication, user management, system endpoints, login history tracking, comprehensive API call logging, and advanced permission management. Supports both email and username login. Features enhanced 64-character secure tokens, user roles and permissions in responses, detailed login history, superadmin-only API logs management with cleanup functionality, role-based user creation, and fine-grained permission assignment system.",
+    "description": "Complete API collection for Pantheon Template Service with authentication, user management, system endpoints, login history tracking, comprehensive API call logging, advanced permission management, external warehouse integration, webhook handling, module access control, enhanced security features, and comprehensive role/permission management. Supports both email and username login. Features enhanced 64-character secure tokens, user roles and permissions in responses, detailed login history, superadmin-only API logs management with cleanup functionality, role-based user creation, fine-grained permission assignment system, external API integration with parallel processing, webhook callbacks for booking management, automated cron job processing, comprehensive module access control for superadmins, 2FA authentication with TOTP support, email verification system, secure password reset with tokens, advanced user management with bulk operations, comprehensive role and permission management with statistics, and enhanced security features including account lockout and password policies.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "version": "1.4.0"
+    "version": "3.0.0"
   },
   "auth": {
     "type": "bearer",
@@ -2781,6 +2781,546 @@
                   "value": "10"
                 }
               ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "External API Integration",
+      "item": [
+        {
+          "name": "Get Products",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/external/products?merchant_id=1&category=travel&search=umrah",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "external", "products"],
+              "query": [
+                {
+                  "key": "merchant_id",
+                  "value": "1",
+                  "description": "Merchant ID to get products for"
+                },
+                {
+                  "key": "category",
+                  "value": "travel",
+                  "description": "Product category filter"
+                },
+                {
+                  "key": "search",
+                  "value": "umrah",
+                  "description": "Search term for products"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Packages",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/external/packages?merchant_id=1&type=umrah&price_min=1000&price_max=5000",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "external", "packages"],
+              "query": [
+                {
+                  "key": "merchant_id",
+                  "value": "1",
+                  "description": "Merchant ID to get packages for"
+                },
+                {
+                  "key": "type",
+                  "value": "umrah",
+                  "description": "Package type filter (umrah, hajj, qurban)"
+                },
+                {
+                  "key": "price_min",
+                  "value": "1000",
+                  "description": "Minimum price filter"
+                },
+                {
+                  "key": "price_max",
+                  "value": "5000",
+                  "description": "Maximum price filter"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Insurance",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/external/insurance?merchant_id=1&package_id=PKG_UMRAH_001",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "external", "insurance"],
+              "query": [
+                {
+                  "key": "merchant_id",
+                  "value": "1",
+                  "description": "Merchant ID to get insurance for"
+                },
+                {
+                  "key": "package_id",
+                  "value": "PKG_UMRAH_001",
+                  "description": "Package ID to get insurance for"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Resources",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/external/resources?merchant_id=1&resource_type=images",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "external", "resources"],
+              "query": [
+                {
+                  "key": "merchant_id",
+                  "value": "1",
+                  "description": "Merchant ID to get resources for"
+                },
+                {
+                  "key": "resource_type",
+                  "value": "images",
+                  "description": "Resource type filter (images, documents, videos, guides)"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Marketing Materials",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/external/marketing?merchant_id=1&campaign_type=email",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "external", "marketing"],
+              "query": [
+                {
+                  "key": "merchant_id",
+                  "value": "1",
+                  "description": "Merchant ID to get marketing for"
+                },
+                {
+                  "key": "campaign_type",
+                  "value": "email",
+                  "description": "Campaign type filter (email, social, banner, brochure)"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Promotions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/external/promotions?merchant_id=1&active_only=true",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "external", "promotions"],
+              "query": [
+                {
+                  "key": "merchant_id",
+                  "value": "1",
+                  "description": "Merchant ID to get promotions for"
+                },
+                {
+                  "key": "active_only",
+                  "value": "true",
+                  "description": "Show only active promotions"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Aggregated Data",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/external/aggregated?merchant_id=1&endpoints=products,packages,insurance&page=1&per_page=20&search=umrah",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "external", "aggregated"],
+              "query": [
+                {
+                  "key": "merchant_id",
+                  "value": "1",
+                  "description": "Merchant ID to get data for"
+                },
+                {
+                  "key": "endpoints",
+                  "value": "products,packages,insurance",
+                  "description": "Comma-separated list of endpoints to fetch"
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number for pagination"
+                },
+                {
+                  "key": "per_page",
+                  "value": "20",
+                  "description": "Number of items per page"
+                },
+                {
+                  "key": "search",
+                  "value": "umrah",
+                  "description": "Search term across all endpoints"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Dashboard Data",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/external/dashboard?merchant_id=1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "external", "dashboard"],
+              "query": [
+                {
+                  "key": "merchant_id",
+                  "value": "1",
+                  "description": "Merchant ID to get dashboard data for"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Redirect to Booking",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"merchant_id\": 1,\n  \"package_id\": \"PKG_UMRAH_001\",\n  \"user_id\": 1,\n  \"insurance_id\": \"INS_001\",\n  \"special_requests\": \"Wheelchair accessible\",\n  \"redirect_url\": \"https://merchant.com/booking\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/external/booking/redirect",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "external", "booking", "redirect"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Webhooks",
+      "item": [
+        {
+          "name": "Booking Callback",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"booking_abc123_1234567890\",\n  \"status\": \"success\",\n  \"booking_id\": \"EXT_BOOKING_123\",\n  \"external_booking_id\": \"MERCHANT_BOOKING_456\",\n  \"amount\": 1500.00,\n  \"currency\": \"USD\",\n  \"payment_reference\": \"PAY_REF_789\",\n  \"booking_details\": {\n    \"package_name\": \"Umrah Package\",\n    \"travel_date\": \"2025-12-01\"\n  },\n  \"customer_info\": {\n    \"name\": \"John Doe\",\n    \"email\": \"john@example.com\",\n    \"phone\": \"+1234567890\"\n  },\n  \"special_requests\": \"Wheelchair accessible\",\n  \"notes\": \"Customer requested early check-in\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/webhooks/booking/callback",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "webhooks", "booking", "callback"]
+            }
+          }
+        },
+        {
+          "name": "Payment Callback",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"booking_id\": \"EXT_BOOKING_123\",\n  \"payment_status\": \"completed\",\n  \"transaction_id\": \"TXN_789\",\n  \"amount\": 1500.00,\n  \"currency\": \"USD\",\n  \"payment_method\": \"credit_card\",\n  \"gateway_response\": {\n    \"gateway\": \"stripe\",\n    \"charge_id\": \"ch_123\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/webhooks/payment/callback",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "webhooks", "payment", "callback"]
+            }
+          }
+        },
+        {
+          "name": "Get Webhook Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/webhooks/status?merchant_id=1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "webhooks", "status"],
+              "query": [
+                {
+                  "key": "merchant_id",
+                  "value": "1",
+                  "description": "Merchant ID to get webhook status for"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Module Access Management",
+      "item": [
+        {
+          "name": "Get All Modules",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/modules",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "modules"]
+            }
+          }
+        },
+        {
+          "name": "Get User Module Access",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/users/1/module-access",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "users", "1", "module-access"]
+            }
+          }
+        },
+        {
+          "name": "Grant Module Access",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"module_id\": \"user_management\",\n  \"permissions\": [\"view users\", \"create users\"],\n  \"grant_all\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/users/1/grant-module-access",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "users", "1", "grant-module-access"]
+            }
+          }
+        },
+        {
+          "name": "Revoke Module Access",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"module_id\": \"user_management\",\n  \"permissions\": [\"delete users\"],\n  \"revoke_all\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/users/1/revoke-module-access",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "users", "1", "revoke-module-access"]
+            }
+          }
+        },
+        {
+          "name": "Bulk Module Access Update",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"modules\": [\n    {\n      \"module_id\": \"user_management\",\n      \"action\": \"grant\",\n      \"permissions\": [\"view users\", \"create users\"],\n      \"grant_all\": false\n    },\n    {\n      \"module_id\": \"booking_management\",\n      \"action\": \"grant\",\n      \"permissions\": [],\n      \"grant_all\": true\n    },\n    {\n      \"module_id\": \"merchant_management\",\n      \"action\": \"revoke\",\n      \"permissions\": [\"delete merchants\"],\n      \"revoke_all\": false\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/users/1/bulk-module-access",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "users", "1", "bulk-module-access"]
             }
           }
         }
