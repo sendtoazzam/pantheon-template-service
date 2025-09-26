@@ -194,16 +194,13 @@ class EnhancedAuthController extends BaseApiController
             // Track successful login
             LoginHistoryService::trackLogin($user, $request, true);
 
-            // Generate token for API guards
-            $token = null;
-            if (str_starts_with($guard, 'api_')) {
-                $token = SecureTokenService::generateSecureToken(64);
-                $user->tokens()->create([
-                    'name' => "{$guard}-token",
-                    'token' => hash('sha256', $token),
-                    'abilities' => ['*'],
-                ]);
-            }
+            // Generate token for all guards (API-based system)
+            $token = SecureTokenService::generateSecureToken(64);
+            $user->tokens()->create([
+                'name' => "{$guard}-token",
+                'token' => hash('sha256', $token),
+                'abilities' => ['*'],
+            ]);
 
             // Get security information
             $securityInfo = GuardService::getGuardSecurity($guard);
