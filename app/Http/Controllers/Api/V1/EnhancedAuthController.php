@@ -185,6 +185,9 @@ class EnhancedAuthController extends BaseApiController
             // Clear rate limiting
             RateLimiter::clear($rateLimitKey);
             
+            // Update last login timestamp
+            $user->update(['last_login_at' => now()]);
+            
             // Load user's roles and permissions
             $user->load('roles', 'permissions');
 
