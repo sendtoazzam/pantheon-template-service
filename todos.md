@@ -180,6 +180,14 @@
 - [ ] Create /api/v1/profile/* endpoints (user profile management)
 - [ ] Create /api/v1/settings/* endpoints (user preferences)
 - [ ] Create /api/v1/notifications/* endpoints (notification system)
+- [ ] Add Swagger documentation for all auth endpoints
+- [ ] Add Swagger documentation for all user management endpoints
+- [ ] Add Swagger documentation for all role/permission endpoints
+- [ ] Add Swagger documentation for all merchant/vendor endpoints
+- [ ] Add Swagger documentation for all booking endpoints
+- [ ] Add Swagger documentation for all profile endpoints
+- [ ] Add Swagger documentation for all settings endpoints
+- [ ] Add Swagger documentation for all notification endpoints
 
 ### **📊 Phase 6: Dashboard System**
 - [ ] Create User Dashboard (React component)
@@ -224,15 +232,32 @@
 - [ ] Create performance tests
 - [ ] Set up automated testing pipeline
 
-### **📚 Phase 11: Documentation & Deployment**
-- [ ] Create API documentation (Swagger/OpenAPI)
+### **📖 Phase 11: Swagger Documentation**
+- [x] Install and configure Swagger package (darkaonline/l5-swagger)
+- [x] Create SwaggerController with global API documentation
+- [x] Add Swagger annotations to Health and System controllers
+- [ ] Add Swagger annotations to AuthController (login, register, logout)
+- [ ] Add Swagger annotations to UserController (CRUD operations)
+- [ ] Add Swagger annotations to RoleController (role management)
+- [ ] Add Swagger annotations to PermissionController (permission management)
+- [ ] Add Swagger annotations to MerchantController (vendor management)
+- [ ] Add Swagger annotations to BookingController (booking management)
+- [ ] Add Swagger annotations to ProfileController (user profile)
+- [ ] Add Swagger annotations to SettingsController (user preferences)
+- [ ] Add Swagger annotations to NotificationController (notifications)
+- [ ] Add comprehensive request/response examples for all endpoints
+- [ ] Document authentication flows and error codes
+- [ ] Add API versioning documentation
+- [ ] Test all Swagger documentation endpoints
+
+### **📚 Phase 12: Documentation & Deployment**
 - [ ] Write user guide documentation
 - [ ] Create admin documentation
 - [ ] Set up deployment scripts
 - [ ] Create database seeding scripts
 - [ ] Set up monitoring and logging
 
-### **🔄 Phase 12: Advanced Features**
+### **🔄 Phase 13: Advanced Features**
 - [ ] Implement bulk user operations
 - [ ] Create user import/export functionality
 - [ ] Set up user groups system
