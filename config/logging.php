@@ -58,6 +58,9 @@ return [
             'ignore_exceptions' => false,
         ],
 
+        // Dynamic channels based on app name
+        ...config('app_logging.channels'),
+
         'single' => [
             'driver' => 'single',
             'path' => storage_path('logs/laravel.log'),

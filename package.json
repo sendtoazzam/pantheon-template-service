@@ -21,6 +21,8 @@
         "vite": "^7.0.4"
     },
     "dependencies": {
+        "@heroicons/react": "^2.2.0",
+        "@tabler/icons-react": "^3.35.0",
         "sweetalert2": "^11.23.0"
     }
 }

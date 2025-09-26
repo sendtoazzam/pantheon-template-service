@@ -1,0 +1,656 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Pantheon Template Service API",
+        "description": "A comprehensive Laravel API with React frontend, health monitoring, and system management",
+        "contact": {
+            "name": "Pantheon Development Team",
+            "email": "admin@pantheon.com"
+        },
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://127.0.0.1:8000",
+            "description": "Development Server"
+        },
+        {
+            "url": "https://api.pantheon.com",
+            "description": "Production Server"
+        }
+    ],
+    "paths": {
+        "/api/v1/health": {
+            "get": {
+                "tags": [
+                    "Health"
+                ],
+                "summary": "Basic health check",
+                "description": "Returns basic health status of the Pantheon Template Service V1 API",
+                "operationId": "getHealth",
+                "responses": {
+                    "200": {
+                        "description": "Service is healthy",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HealthResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Service is unhealthy",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Service unavailable"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        },
+                                        "error": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/health/detailed": {
+            "get": {
+                "tags": [
+                    "Health"
+                ],
+                "summary": "Detailed health check",
+                "description": "Returns comprehensive health status including database, cache, storage, memory, disk space, environment, services, models, and permissions checks",
+                "operationId": "getDetailedHealth",
+                "responses": {
+                    "200": {
+                        "description": "Detailed health status",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DetailedHealthResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Health check failed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Health check failed"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        },
+                                        "error": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/swagger.json": {
+            "get": {
+                "tags": [
+                    "Documentation"
+                ],
+                "summary": "Get Swagger JSON specification",
+                "description": "Returns the complete Swagger/OpenAPI specification for the API",
+                "operationId": "getSwaggerJson",
+                "responses": {
+                    "200": {
+                        "description": "Swagger JSON specification",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "openapi": {
+                                            "type": "string",
+                                            "example": "3.0.0"
+                                        },
+                                        "info": {
+                                            "type": "object"
+                                        },
+                                        "servers": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "paths": {
+                                            "type": "object"
+                                        },
+                                        "components": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/docs": {
+            "get": {
+                "tags": [
+                    "Documentation"
+                ],
+                "summary": "Get API documentation",
+                "description": "Returns the Swagger UI interface for API documentation",
+                "operationId": "getApiDocs",
+                "responses": {
+                    "200": {
+                        "description": "Swagger UI HTML page",
+                        "content": {
+                            "text/html": {}
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/system/status": {
+            "get": {
+                "tags": [
+                    "System"
+                ],
+                "summary": "Get comprehensive system status",
+                "description": "Returns detailed system status including all health checks, system information, and recommendations",
+                "operationId": "getSystemStatus",
+                "responses": {
+                    "200": {
+                        "description": "System status retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SystemStatusResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to retrieve system status",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Failed to retrieve system status"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        },
+                                        "error": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/system/quick-status": {
+            "get": {
+                "tags": [
+                    "System"
+                ],
+                "summary": "Get quick system status",
+                "description": "Returns quick system status optimized for dashboard cards with essential metrics",
+                "operationId": "getQuickStatus",
+                "responses": {
+                    "200": {
+                        "description": "Quick status retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/QuickStatusResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to retrieve quick status",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Failed to retrieve quick status"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        },
+                                        "error": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/system/metrics": {
+            "get": {
+                "tags": [
+                    "System"
+                ],
+                "summary": "Get system metrics",
+                "description": "Returns detailed system metrics for charts and monitoring dashboards",
+                "operationId": "getSystemMetrics",
+                "responses": {
+                    "200": {
+                        "description": "System metrics retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MetricsResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to retrieve system metrics",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Failed to retrieve system metrics"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        },
+                                        "error": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "HealthResponse": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Success"
+                    },
+                    "data": {
+                        "properties": {
+                            "status": {
+                                "type": "string",
+                                "example": "success"
+                            },
+                            "message": {
+                                "type": "string",
+                                "example": "Pantheon Template Service V1 is running!"
+                            },
+                            "timestamp": {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "version": {
+                                "type": "string",
+                                "example": "1.0.0"
+                            },
+                            "api_version": {
+                                "type": "string",
+                                "example": "v1"
+                            },
+                            "features": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "endpoints": {
+                                "type": "object"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "timestamp": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "DetailedHealthResponse": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Success"
+                    },
+                    "data": {
+                        "properties": {
+                            "status": {
+                                "type": "string",
+                                "example": "healthy"
+                            },
+                            "message": {
+                                "type": "string",
+                                "example": "All V1 systems operational"
+                            },
+                            "timestamp": {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "version": {
+                                "type": "string",
+                                "example": "1.0.0"
+                            },
+                            "api_version": {
+                                "type": "string",
+                                "example": "v1"
+                            },
+                            "checks": {
+                                "type": "object"
+                            },
+                            "system_info": {
+                                "type": "object"
+                            },
+                            "recommendations": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "timestamp": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "SystemStatusResponse": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Success"
+                    },
+                    "data": {
+                        "properties": {
+                            "status": {
+                                "type": "string",
+                                "example": "healthy"
+                            },
+                            "message": {
+                                "type": "string",
+                                "example": "All V1 systems operational"
+                            },
+                            "timestamp": {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "version": {
+                                "type": "string",
+                                "example": "1.0.0"
+                            },
+                            "api_version": {
+                                "type": "string",
+                                "example": "v1"
+                            },
+                            "checks": {
+                                "type": "object"
+                            },
+                            "system_info": {
+                                "type": "object"
+                            },
+                            "recommendations": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "timestamp": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "QuickStatusResponse": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Success"
+                    },
+                    "data": {
+                        "properties": {
+                            "status": {
+                                "type": "string",
+                                "example": "healthy"
+                            },
+                            "uptime": {
+                                "type": "string",
+                                "example": "13:37  up 23:29, 2 users, load averages: 3.75 3.44 4.08"
+                            },
+                            "memory_usage": {
+                                "type": "number",
+                                "format": "float",
+                                "example": 1.56
+                            },
+                            "disk_usage": {
+                                "type": "number",
+                                "format": "float",
+                                "example": 63.43
+                            },
+                            "database_status": {
+                                "type": "string",
+                                "example": "connected"
+                            },
+                            "cache_status": {
+                                "type": "string",
+                                "example": "working"
+                            },
+                            "timestamp": {
+                                "type": "string",
+                                "format": "date-time"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "timestamp": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "MetricsResponse": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Success"
+                    },
+                    "data": {
+                        "properties": {
+                            "memory": {
+                                "properties": {
+                                    "usage_mb": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 45.67
+                                    },
+                                    "peak_mb": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 67.89
+                                    },
+                                    "limit_mb": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 512
+                                    }
+                                },
+                                "type": "object"
+                            },
+                            "disk": {
+                                "properties": {
+                                    "free_gb": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 45.67
+                                    },
+                                    "total_gb": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 500
+                                    },
+                                    "used_percentage": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 63.43
+                                    }
+                                },
+                                "type": "object"
+                            },
+                            "database": {
+                                "properties": {
+                                    "connection_time_ms": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 2.45
+                                    },
+                                    "tables_count": {
+                                        "type": "integer",
+                                        "example": 15
+                                    }
+                                },
+                                "type": "object"
+                            },
+                            "cache": {
+                                "properties": {
+                                    "hit_rate": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 95.5
+                                    }
+                                },
+                                "type": "object"
+                            },
+                            "timestamp": {
+                                "type": "string",
+                                "format": "date-time"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "timestamp": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "description": "Enter your bearer token",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Health",
+            "description": "Health check endpoints for system monitoring"
+        },
+        {
+            "name": "System",
+            "description": "System status and metrics endpoints"
+        },
+        {
+            "name": "Documentation",
+            "description": "Documentation"
+        }
+    ]
+}

@@ -52,7 +52,7 @@ class PantheonLoggerService
      */
     public static function info(string $message, array $context = []): void
     {
-        Log::channel(self::getChannelName('daily'))->info($message, $context);
+        Log::channel(self::getChannelName('main'))->info($message, $context);
     }
 
     /**
@@ -60,7 +60,7 @@ class PantheonLoggerService
      */
     public static function debug(string $message, array $context = []): void
     {
-        Log::channel(self::getChannelName('daily'))->debug($message, $context);
+        Log::channel(self::getChannelName('main'))->debug($message, $context);
     }
 
     /**

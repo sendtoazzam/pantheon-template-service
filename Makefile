@@ -242,8 +242,83 @@ optimize: ## Optimize application for production
 	npm run build
 
 .PHONY: quick
-quick: clear build serve-background ## Quick development setup (clear cache + build + start server)
+quick: ## Quick development setup (build + clear all + start server)
+	@echo "$(BLUE)Building frontend assets...$(NC)"
+	npm run build
+	@echo "$(BLUE)Clearing all caches...$(NC)"
+	php artisan optimize:clear
+	@echo "$(BLUE)Checking for existing server on port $(PORT)...$(NC)"
+	@if lsof -Pi :$(PORT) -sTCP:LISTEN -t >/dev/null 2>&1; then \
+		echo "$(YELLOW)Port $(PORT) is in use. Stopping existing server...$(NC)"; \
+		pkill -f "php artisan serve" || true; \
+		sleep 2; \
+	fi
+	@echo "$(BLUE)Starting development server...$(NC)"
+	@if lsof -Pi :$(PORT) -sTCP:LISTEN -t >/dev/null 2>&1; then \
+		echo "$(YELLOW)Port $(PORT) still in use. Finding available port...$(NC)"; \
+		for port in $$(seq $(PORT) $$((PORT + 10))); do \
+			if ! lsof -Pi :$$port -sTCP:LISTEN -t >/dev/null 2>&1; then \
+				echo "$(GREEN)Using port $$port$(NC)"; \
+				php artisan serve --host=$(HOST) --port=$$port; \
+				exit 0; \
+			fi; \
+		done; \
+		echo "$(RED)No available ports found in range $(PORT)-$$((PORT + 10))$(NC)"; \
+		exit 1; \
+	else \
+		php artisan serve --host=$(HOST) --port=$(PORT); \
+	fi
 	@echo "$(GREEN)Quick setup completed! Server running at http://$(HOST):$(PORT)$(NC)"
+
+.PHONY: quick-bg
+quick-bg: ## Quick development setup in background (build + clear all + start server)
+	@echo "$(BLUE)Building frontend assets...$(NC)"
+	npm run build
+	@echo "$(BLUE)Clearing all caches...$(NC)"
+	php artisan optimize:clear
+	@echo "$(BLUE)Checking for existing server on port $(PORT)...$(NC)"
+	@if lsof -Pi :$(PORT) -sTCP:LISTEN -t >/dev/null 2>&1; then \
+		echo "$(YELLOW)Port $(PORT) is in use. Stopping existing server...$(NC)"; \
+		pkill -f "php artisan serve" || true; \
+		sleep 2; \
+	fi
+	@echo "$(BLUE)Starting development server in background...$(NC)"
+	@if lsof -Pi :$(PORT) -sTCP:LISTEN -t >/dev/null 2>&1; then \
+		echo "$(YELLOW)Port $(PORT) still in use. Finding available port...$(NC)"; \
+		for port in $$(seq $(PORT) $$((PORT + 10))); do \
+			if ! lsof -Pi :$$port -sTCP:LISTEN -t >/dev/null 2>&1; then \
+				echo "$(GREEN)Using port $$port$(NC)"; \
+				php artisan serve --host=$(HOST) --port=$$port > /dev/null 2>&1 & \
+				echo "$(GREEN)Quick setup completed! Server running at http://$(HOST):$$port$(NC)"; \
+				exit 0; \
+			fi; \
+		done; \
+		echo "$(RED)No available ports found in range $(PORT)-$$((PORT + 10))$(NC)"; \
+		exit 1; \
+	else \
+		php artisan serve --host=$(HOST) --port=$(PORT) > /dev/null 2>&1 & \
+		echo "$(GREEN)Quick setup completed! Server running at http://$(HOST):$(PORT)$(NC)"; \
+	fi
+
+# ============================================
+# SERVER MANAGEMENT
+# ============================================
+
+.PHONY: kill-server
+kill-server: ## Kill any running Laravel development servers
+	@echo "$(BLUE)Stopping Laravel development servers...$(NC)"
+	@pkill -f "php artisan serve" || echo "$(YELLOW)No Laravel servers found$(NC)"
+	@echo "$(GREEN)Server cleanup completed$(NC)"
+
+.PHONY: check-port
+check-port: ## Check if port is available
+	@echo "$(BLUE)Checking port $(PORT)...$(NC)"
+	@if lsof -Pi :$(PORT) -sTCP:LISTEN -t >/dev/null 2>&1; then \
+		echo "$(RED)Port $(PORT) is in use$(NC)"; \
+		lsof -Pi :$(PORT) -sTCP:LISTEN; \
+	else \
+		echo "$(GREEN)Port $(PORT) is available$(NC)"; \
+	fi
 
 # ============================================
 # MAINTENANCE
