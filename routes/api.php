@@ -42,10 +42,21 @@ Route::prefix('v1')->group(function () {
     Route::prefix('auth')->group(function () {
         Route::post('/register', [App\Http\Controllers\Api\V1\AuthController::class, 'register']);
         Route::post('/login', [App\Http\Controllers\Api\V1\AuthController::class, 'login']);
+        
+        // Enhanced authentication routes
+        Route::post('/login/{guard}', [App\Http\Controllers\Api\V1\EnhancedAuthController::class, 'loginWithGuard']);
+        
         Route::middleware('auth:sanctum')->group(function () {
             Route::post('/logout', [App\Http\Controllers\Api\V1\AuthController::class, 'logout']);
             Route::get('/me', [App\Http\Controllers\Api\V1\AuthController::class, 'me']);
             Route::post('/refresh', [App\Http\Controllers\Api\V1\AuthController::class, 'refresh']);
+            Route::get('/login-history', [App\Http\Controllers\Api\V1\LoginHistoryController::class, 'index']);
+            Route::get('/login-statistics', [App\Http\Controllers\Api\V1\LoginHistoryController::class, 'statistics']);
+            
+            // Enhanced guard management
+            Route::get('/guards', [App\Http\Controllers\Api\V1\EnhancedAuthController::class, 'getAvailableGuards']);
+            Route::post('/switch-guard', [App\Http\Controllers\Api\V1\EnhancedAuthController::class, 'switchGuard']);
+            Route::get('/guard-statistics', [App\Http\Controllers\Api\V1\EnhancedAuthController::class, 'getGuardStatistics']);
         });
     });
 
@@ -88,6 +99,13 @@ Route::prefix('v1')->group(function () {
             Route::delete('/{id}', [App\Http\Controllers\Api\V1\BookingController::class, 'destroy']);
         });
 
+        // Profile routes (permission-based access)
+        Route::prefix('profile')->group(function () {
+            Route::get('/', [App\Http\Controllers\Api\V1\ProfileController::class, 'show'])->middleware('permission_access:view own profile');
+            Route::put('/', [App\Http\Controllers\Api\V1\ProfileController::class, 'update'])->middleware('permission_access:edit own profile');
+            Route::get('/permissions', [App\Http\Controllers\Api\V1\ProfileController::class, 'getPermissions']);
+        });
+
         // Admin routes
         Route::prefix('admin')->group(function () {
             Route::get('/dashboard', [App\Http\Controllers\Api\V1\AdminController::class, 'dashboard']);
@@ -101,6 +119,34 @@ Route::prefix('v1')->group(function () {
             Route::post('/give-permission', [App\Http\Controllers\Api\V1\AdminController::class, 'givePermission']);
             Route::post('/revoke-permission', [App\Http\Controllers\Api\V1\AdminController::class, 'revokePermission']);
             Route::get('/user-activity/{userId}', [App\Http\Controllers\Api\V1\AdminController::class, 'userActivity']);
+            
+            // Enhanced Permission Management
+            Route::middleware('role:admin,superadmin')->group(function () {
+                Route::get('/permissions', [App\Http\Controllers\Api\V1\PermissionController::class, 'index']);
+                Route::get('/roles', [App\Http\Controllers\Api\V1\PermissionController::class, 'getRoles']);
+                Route::post('/users/{userId}/assign-role', [App\Http\Controllers\Api\V1\PermissionController::class, 'assignRole']);
+                Route::post('/users/{userId}/remove-role', [App\Http\Controllers\Api\V1\PermissionController::class, 'removeRole']);
+                Route::post('/users/{userId}/give-permission', [App\Http\Controllers\Api\V1\PermissionController::class, 'givePermission']);
+                Route::post('/users/{userId}/revoke-permission', [App\Http\Controllers\Api\V1\PermissionController::class, 'revokePermission']);
+                Route::get('/users/{userId}/permissions', [App\Http\Controllers\Api\V1\PermissionController::class, 'getUserPermissions']);
+            });
+            
+            // User Management (Superadmin only)
+            Route::middleware('role:superadmin')->group(function () {
+                Route::get('/users', [App\Http\Controllers\Api\V1\UserManagementController::class, 'index']);
+                Route::post('/users', [App\Http\Controllers\Api\V1\UserManagementController::class, 'store']);
+                Route::get('/users/{id}', [App\Http\Controllers\Api\V1\UserManagementController::class, 'show']);
+                Route::put('/users/{id}', [App\Http\Controllers\Api\V1\UserManagementController::class, 'update']);
+                Route::delete('/users/{id}', [App\Http\Controllers\Api\V1\UserManagementController::class, 'destroy']);
+            });
+            
+            // API Logs Management (Superadmin only)
+            Route::middleware('role:superadmin')->group(function () {
+                Route::get('/api-logs', [App\Http\Controllers\Api\V1\ApiLogsController::class, 'index']);
+                Route::get('/api-logs/statistics', [App\Http\Controllers\Api\V1\ApiLogsController::class, 'statistics']);
+                Route::delete('/api-logs/cleanup', [App\Http\Controllers\Api\V1\ApiLogsController::class, 'cleanup']);
+                Route::get('/api-logs/{id}', [App\Http\Controllers\Api\V1\ApiLogsController::class, 'show']);
+            });
         });
     });
 });

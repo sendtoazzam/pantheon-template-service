@@ -17,6 +17,14 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
         
         $middleware->append(\App\Http\Middleware\FormatApiResponse::class);
+        
+        // Register custom middleware
+        $middleware->alias([
+            'role' => \App\Http\Middleware\RoleMiddleware::class,
+            'permission' => \App\Http\Middleware\PermissionMiddleware::class,
+            'guard' => \App\Http\Middleware\GuardMiddleware::class,
+            'permission_access' => \App\Http\Middleware\PermissionBasedAccessMiddleware::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

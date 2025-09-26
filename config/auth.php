@@ -40,6 +40,41 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+
+        'api' => [
+            'driver' => 'sanctum',
+            'provider' => 'users',
+        ],
+
+        'superadmin' => [
+            'driver' => 'session',
+            'provider' => 'superadmins',
+        ],
+
+        'api_superadmin' => [
+            'driver' => 'sanctum',
+            'provider' => 'superadmins',
+        ],
+
+        'admin' => [
+            'driver' => 'session',
+            'provider' => 'admins',
+        ],
+
+        'api_admin' => [
+            'driver' => 'sanctum',
+            'provider' => 'admins',
+        ],
+
+        'vendor' => [
+            'driver' => 'session',
+            'provider' => 'vendors',
+        ],
+
+        'api_vendor' => [
+            'driver' => 'sanctum',
+            'provider' => 'vendors',
+        ],
     ],
 
     /*
@@ -65,10 +100,32 @@ return [
             'model' => env('AUTH_MODEL', App\Models\User::class),
         ],
 
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+        'superadmins' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\User::class,
+            'conditions' => [
+                'is_admin' => true,
+                'is_active' => true,
+            ],
+        ],
+
+        'admins' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\User::class,
+            'conditions' => [
+                'is_admin' => true,
+                'is_active' => true,
+            ],
+        ],
+
+        'vendors' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\User::class,
+            'conditions' => [
+                'is_vendor' => true,
+                'is_active' => true,
+            ],
+        ],
     ],
 
     /*

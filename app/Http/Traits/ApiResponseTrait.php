@@ -139,4 +139,65 @@ trait ApiResponseTrait
     {
         return response()->json(null, 204);
     }
+
+    // Alias methods for backward compatibility
+    protected function success($data = null, string $message = 'Success', int $statusCode = 200): JsonResponse
+    {
+        return $this->successResponse($data, $message, $statusCode);
+    }
+
+    protected function error(string $message = 'Error', $errors = null, int $statusCode = 400): JsonResponse
+    {
+        return $this->errorResponse($message, $errors, $statusCode);
+    }
+
+    protected function validationError($errors, string $message = 'Validation failed'): JsonResponse
+    {
+        return $this->validationErrorResponse($errors, $message);
+    }
+
+    protected function notFound(string $message = 'Resource not found'): JsonResponse
+    {
+        return $this->notFoundResponse($message);
+    }
+
+    protected function unauthorized(string $message = 'Unauthorized'): JsonResponse
+    {
+        return $this->unauthorizedResponse($message);
+    }
+
+    protected function forbidden(string $message = 'Forbidden'): JsonResponse
+    {
+        return $this->forbiddenResponse($message);
+    }
+
+    protected function serverError(string $message = 'Internal server error'): JsonResponse
+    {
+        return $this->serverErrorResponse($message);
+    }
+
+    protected function paginated($data, string $message = 'Data retrieved successfully'): JsonResponse
+    {
+        return $this->paginatedResponse($data, $message);
+    }
+
+    protected function created($data = null, string $message = 'Resource created successfully'): JsonResponse
+    {
+        return $this->createdResponse($data, $message);
+    }
+
+    protected function updated($data = null, string $message = 'Resource updated successfully'): JsonResponse
+    {
+        return $this->updatedResponse($data, $message);
+    }
+
+    protected function deleted(string $message = 'Resource deleted successfully'): JsonResponse
+    {
+        return $this->deletedResponse($message);
+    }
+
+    protected function noContent(): JsonResponse
+    {
+        return $this->noContentResponse();
+    }
 }
