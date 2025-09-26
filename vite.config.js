@@ -9,7 +9,8 @@ export default defineConfig({
                 'resources/css/app.css', 
                 'resources/js/app.jsx',
                 'resources/js/admin.jsx',
-                'resources/js/welcome.jsx'
+                'resources/js/welcome.jsx',
+                'resources/js/status.jsx'
             ],
             refresh: true,
         }),

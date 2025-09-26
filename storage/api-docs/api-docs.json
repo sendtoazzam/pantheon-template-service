@@ -2,10 +2,11 @@
     "openapi": "3.0.0",
     "info": {
         "title": "Pantheon Template Service API",
-        "description": "A comprehensive Laravel API with React frontend, health monitoring, and system management",
+        "description": "A comprehensive API for the Pantheon Template Service with user management, role-based access control, and multi-tenant support.",
         "contact": {
-            "name": "Pantheon Development Team",
-            "email": "admin@pantheon.com"
+            "name": "API Support",
+            "url": "https://pantheon-template-service.com/support",
+            "email": "support@pantheon-template-service.com"
         },
         "license": {
             "name": "MIT",
@@ -13,16 +14,6 @@
         },
         "version": "1.0.0"
     },
-    "servers": [
-        {
-            "url": "http://127.0.0.1:8000",
-            "description": "Development Server"
-        },
-        {
-            "url": "https://api.pantheon.com",
-            "description": "Production Server"
-        }
-    ],
     "paths": {
         "/api/v1/health": {
             "get": {
@@ -115,67 +106,6 @@
                                     "type": "object"
                                 }
                             }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/swagger.json": {
-            "get": {
-                "tags": [
-                    "Documentation"
-                ],
-                "summary": "Get Swagger JSON specification",
-                "description": "Returns the complete Swagger/OpenAPI specification for the API",
-                "operationId": "getSwaggerJson",
-                "responses": {
-                    "200": {
-                        "description": "Swagger JSON specification",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "openapi": {
-                                            "type": "string",
-                                            "example": "3.0.0"
-                                        },
-                                        "info": {
-                                            "type": "object"
-                                        },
-                                        "servers": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object"
-                                            }
-                                        },
-                                        "paths": {
-                                            "type": "object"
-                                        },
-                                        "components": {
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/docs": {
-            "get": {
-                "tags": [
-                    "Documentation"
-                ],
-                "summary": "Get API documentation",
-                "description": "Returns the Swagger UI interface for API documentation",
-                "operationId": "getApiDocs",
-                "responses": {
-                    "200": {
-                        "description": "Swagger UI HTML page",
-                        "content": {
-                            "text/html": {}
                         }
                     }
                 }
@@ -628,29 +558,274 @@
                     }
                 },
                 "type": "object"
+            },
+            "ApiResponse": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Success"
+                    },
+                    "data": {
+                        "type": "object"
+                    },
+                    "timestamp": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-09-26T06:22:22.112825Z"
+                    }
+                },
+                "type": "object"
+            },
+            "ErrorResponse": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "An error occurred"
+                    },
+                    "error": {
+                        "properties": {
+                            "message": {
+                                "type": "string",
+                                "example": "Validation failed"
+                            },
+                            "details": {
+                                "type": "object"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "timestamp": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-09-26T06:22:22.112825Z"
+                    }
+                },
+                "type": "object"
+            },
+            "User": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "John Doe"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "john@example.com"
+                    },
+                    "email_verified_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "roles": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Role"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "Role": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "admin"
+                    },
+                    "guard_name": {
+                        "type": "string",
+                        "example": "web"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "Merchant": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "business_name": {
+                        "type": "string",
+                        "example": "Acme Corp"
+                    },
+                    "contact_email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "contact@acme.com"
+                    },
+                    "phone": {
+                        "type": "string",
+                        "example": "+1234567890"
+                    },
+                    "address": {
+                        "type": "string",
+                        "example": "123 Main St, City, State"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "active",
+                            "inactive",
+                            "pending"
+                        ],
+                        "example": "active"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "Booking": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "merchant_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "service_name": {
+                        "type": "string",
+                        "example": "Consultation"
+                    },
+                    "booking_date": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "pending",
+                            "confirmed",
+                            "cancelled",
+                            "completed"
+                        ],
+                        "example": "pending"
+                    },
+                    "notes": {
+                        "type": "string",
+                        "example": "Special requirements"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "HealthCheck": {
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "healthy",
+                            "degraded",
+                            "unhealthy"
+                        ],
+                        "example": "healthy"
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "All systems operational"
+                    },
+                    "timestamp": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "version": {
+                        "type": "string",
+                        "example": "1.0.0"
+                    },
+                    "api_version": {
+                        "type": "string",
+                        "example": "v1"
+                    },
+                    "checks": {
+                        "type": "object"
+                    },
+                    "system_info": {
+                        "type": "object"
+                    }
+                },
+                "type": "object"
             }
         },
         "securitySchemes": {
-            "bearerAuth": {
+            "sanctum": {
                 "type": "http",
-                "description": "Enter your bearer token",
+                "description": "Laravel Sanctum API Token Authentication",
                 "bearerFormat": "JWT",
                 "scheme": "bearer"
+            },
+            "csrf": {
+                "type": "apiKey",
+                "description": "CSRF Token for web routes",
+                "name": "X-CSRF-TOKEN",
+                "in": "header"
             }
         }
     },
     "tags": [
         {
             "name": "Health",
-            "description": "Health check endpoints for system monitoring"
+            "description": "System health and status endpoints"
         },
         {
             "name": "System",
-            "description": "System status and metrics endpoints"
-        },
-        {
-            "name": "Documentation",
-            "description": "Documentation"
+            "description": "System status and metrics"
         }
     ]
 }
