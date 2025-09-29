@@ -268,6 +268,37 @@ Route::prefix('v1')->group(function () {
                 Route::delete('/api-logs/cleanup', [App\Http\Controllers\Api\V1\ApiLogsController::class, 'cleanup']);
                 Route::get('/api-logs/{id}', [App\Http\Controllers\Api\V1\ApiLogsController::class, 'show']);
             });
+
+            // Notification Settings Management (Superadmin only)
+            Route::middleware('role:superadmin')->group(function () {
+                Route::get('/notification-settings', [App\Http\Controllers\Api\V1\NotificationSettingsController::class, 'index']);
+                Route::post('/notification-settings', [App\Http\Controllers\Api\V1\NotificationSettingsController::class, 'store']);
+                Route::put('/notification-settings/{id}', [App\Http\Controllers\Api\V1\NotificationSettingsController::class, 'update']);
+                Route::put('/notification-settings/{id}/activate', [App\Http\Controllers\Api\V1\NotificationSettingsController::class, 'activate']);
+                Route::put('/notification-settings/{id}/deactivate', [App\Http\Controllers\Api\V1\NotificationSettingsController::class, 'deactivate']);
+                Route::put('/notification-settings/{id}/set-default', [App\Http\Controllers\Api\V1\NotificationSettingsController::class, 'setDefault']);
+                Route::post('/notification-settings/{id}/test', [App\Http\Controllers\Api\V1\NotificationSettingsController::class, 'test']);
+                Route::delete('/notification-settings/{id}', [App\Http\Controllers\Api\V1\NotificationSettingsController::class, 'destroy']);
+            });
+
+            // Payment Gateway Settings Management (Superadmin only)
+            Route::middleware('role:superadmin')->group(function () {
+                Route::get('/payment-gateway-settings', [App\Http\Controllers\Api\V1\PaymentGatewaySettingsController::class, 'index']);
+                Route::post('/payment-gateway-settings', [App\Http\Controllers\Api\V1\PaymentGatewaySettingsController::class, 'store']);
+                Route::put('/payment-gateway-settings/{id}', [App\Http\Controllers\Api\V1\PaymentGatewaySettingsController::class, 'update']);
+                Route::put('/payment-gateway-settings/{id}/activate', [App\Http\Controllers\Api\V1\PaymentGatewaySettingsController::class, 'activate']);
+                Route::put('/payment-gateway-settings/{id}/deactivate', [App\Http\Controllers\Api\V1\PaymentGatewaySettingsController::class, 'deactivate']);
+                Route::put('/payment-gateway-settings/{id}/set-default', [App\Http\Controllers\Api\V1\PaymentGatewaySettingsController::class, 'setDefault']);
+                Route::post('/payment-gateway-settings/{id}/test', [App\Http\Controllers\Api\V1\PaymentGatewaySettingsController::class, 'test']);
+                Route::post('/payment-gateway-settings/{id}/calculate-fee', [App\Http\Controllers\Api\V1\PaymentGatewaySettingsController::class, 'calculateFee']);
+                Route::delete('/payment-gateway-settings/{id}', [App\Http\Controllers\Api\V1\PaymentGatewaySettingsController::class, 'destroy']);
+            });
+
+            // Bulk Notifications Management (Superadmin only)
+            Route::middleware('role:superadmin')->group(function () {
+                Route::post('/bulk-notifications/send', [App\Http\Controllers\Api\V1\BulkNotificationController::class, 'sendBulkNotifications']);
+                Route::get('/bulk-notifications/statistics', [App\Http\Controllers\Api\V1\BulkNotificationController::class, 'getStatistics']);
+            });
         });
     });
 });
